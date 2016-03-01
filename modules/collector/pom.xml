@@ -7,7 +7,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
-	<artifactId>kepler-collector</artifactId>
+	<artifactId>kepler-admin-collector</artifactId>
 
 	<properties>
 		<maven.project.name>kepler-collector</maven.project.name>
