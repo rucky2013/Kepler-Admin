@@ -1,5 +1,5 @@
 if test ! -e sid ; then
-ifconfig | md5sum | awk '{print $1}' > sid;
+echo $HOSTNAME`pwd` | md5sum | awk '{print $1}' > sid;
 fi
 for var in $(seq 1 $1)
 do
