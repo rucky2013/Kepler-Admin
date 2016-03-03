@@ -59,8 +59,8 @@ Kepler Admin 是一款专门为使用Kepler框架的服务提供的服务监控�
 为每个节点提供以下功能：
 
 - 主机状态查询
-	- <a href="https://github.com/Kepler-Framework/Kepler-Admin/wiki/%E6%94%B6%E9%9B%86%E5%99%A8%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89#status_static">静态参数</a>查询
-	- <a href="https://github.com/Kepler-Framework/Kepler-Admin/wiki/%E6%94%B6%E9%9B%86%E5%99%A8%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89#status_dynamic">动态参数</a>查询
+	- <a href="https://github.com/Kepler-Framework/Kepler-Admin/wiki/%E6%94%B6%E9%9B%86%E5%99%A8%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89#status_static">静态status</a>查询
+	- <a href="https://github.com/Kepler-Framework/Kepler-Admin/wiki/%E6%94%B6%E9%9B%86%E5%99%A8%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89#status_dynamic">动态status</a>查询
 - 动态参数配置
 	- 修改该实例的**标签**以及**优先级**（0-9，优先级依次递增）
 	- 修改kepler框架参数，@See[<a href="https://github.com/Kepler-Framework/Kepler-All/wiki/%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE-%E5%8A%A8%E6%80%81%E5%8F%82%E6%95%B0">动态参数</a>]
