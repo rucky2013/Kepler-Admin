@@ -1,13 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.kepler</groupId>
-	<artifactId>kepler-admin-monitor</artifactId>
+	<parent>
+		<groupId>com.kepler</groupId>
+		<artifactId>kepler-collector-parent</artifactId>
+		<version>0.0.6-SNAPSHOT</version>
+		<relativePath>../parent/pom.xml</relativePath>
+	</parent>
+	<artifactId>kepler-collector-admin</artifactId>
 	<packaging>war</packaging>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>${maven.project.name}</name>
 	<properties>
 		<maven.project.name>kepler-admin</maven.project.name>
-		<maven.project.compile.version>1.7</maven.project.compile.version>
+		<maven.project.jackson.version>2.4.2</maven.project.jackson.version>
 		<maven.project.spring.version>4.1.6.RELEASE</maven.project.spring.version>
 		<maven.project.build.sourceEncoding>UTF-8</maven.project.build.sourceEncoding>
 	</properties>
@@ -15,13 +20,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.kepler</groupId>
-			<artifactId>kepler-all</artifactId>
-			<version>0.0.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.kepler</groupId>
-			<artifactId>kepler-admin-common</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<artifactId>kepler-collector-common</artifactId>
+			<version>${maven.kepler.version}</version>
 		</dependency>
 		<!-- For Filter -->
 		<dependency>
@@ -60,33 +60,6 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>${maven.project.spring.version}</version>
 		</dependency>
-		<!-- For JSON -->
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.4.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<version>2.4.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>2.4.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-			<version>2.13.2</version>
-		</dependency>
-		<!-- For Commons -->
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-		</dependency>
 		<!-- Curator -->
 		<dependency>
 			<groupId>org.apache.curator</groupId>
@@ -97,6 +70,32 @@
 			<groupId>org.apache.curator</groupId>
 			<artifactId>curator-recipes</artifactId>
 			<version>2.9.1</version>
+		</dependency>
+		<!-- For JSON -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${maven.project.jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${maven.project.jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${maven.project.jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.xerial.snappy</groupId>
+			<artifactId>snappy-java</artifactId>
+			<version>1.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
 		</dependency>
 	</dependencies>
 	<build>

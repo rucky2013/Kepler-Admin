@@ -1,0 +1,33 @@
+<script src="../assets/js/chart/highcharts.js"></script>
+<script src="../assets/js/chart/modules/exporting.js"></script>
+<script src="function-barchart-js-build.js"></script>
+<script>
+	//收起左侧菜单
+	$("#sidebar-collapse").click();
+	//更新导航
+	$("#navigation").html("客户端统计");
+	
+	function loadClients() {
+		jQuery.ajax({
+			type : "GET",
+			url : "/api/barchart/statistics4Clients?service=" + param("service") + "&versionAndCatalog=" + param("versionAndCatalog") + "&method=" + param("method") + "&period=" + param("period"),
+			success : function callback(data) {
+				var total = build("客户端调用量", data[0].categories, data[0].series, "total", "");
+				var error = build("客户端错误量", data[1].categories, data[1].series, "error", "");
+				var elapse = build("客户端调用耗时", data[2].categories, data[2].series, "elapse(ms)", " ms");
+				draw([total, error, elapse], ['clients-total', 'clients-error', 'clients-elapse']);
+				draw(chart);
+				
+			}
+		});
+	}
+	
+	function draw(data, canvas) {
+		$(data).each(function(index, element){
+			$("#" + canvas[index]).highcharts(element);
+		});
+	}
+	window.onload = function() {
+		loadClients();
+	}
+</script>

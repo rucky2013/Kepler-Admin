@@ -1,13 +1,12 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.kepler</groupId>
-		<artifactId>kepler-admin-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<artifactId>kepler-collector-parent</artifactId>
+		<version>0.0.6-SNAPSHOT</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
-	<artifactId>kepler-admin-collector</artifactId>
+	<artifactId>kepler-collector-service</artifactId>
 
 	<properties>
 		<maven.project.name>kepler-collector</maven.project.name>
@@ -16,33 +15,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.kepler</groupId>
-			<artifactId>kepler-all</artifactId>
-			<version>0.0.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.kepler</groupId>
-			<artifactId>kepler-admin-common</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-			<version>2.13.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>${maven.project.spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>${maven.project.spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${maven.project.spring.version}</version>
+			<artifactId>kepler-collector-common</artifactId>
+			<version>${maven.kepler.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -75,42 +49,42 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 				<executions>
-		          <execution>
-		            <id>copy-resources</id>
-		            <phase>package</phase>
-		            <goals>
-		              <goal>copy-resources</goal>
-		            </goals>
-		            <configuration>
-		              <outputDirectory>${project.build.directory}/${maven.project.name}</outputDirectory>
-		              <resources>          
-		                <resource>
-		                  <directory>src/bin</directory>
-		                  <filtering>true</filtering>
-		                </resource>
-		              </resources>              
-		            </configuration>  
-		          </execution>
-		          
-		          <execution>
-		            <id>copy-resources2</id>
-		            <phase>package</phase>
-		            <goals>
-		              <goal>copy-resources</goal>
-		            </goals>
-		            <configuration>
-		              <outputDirectory>${project.build.directory}/${maven.project.name}</outputDirectory>
-		              <resources>          
-		                <resource>
-		                  <directory>${project.build.directory}</directory>
-		                  <includes>
-					          <include>${maven.project.name}.jar</include>
-					        </includes>
-		                </resource>
-		              </resources>              
-		            </configuration>  
-		          </execution>
-		        </executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/${maven.project.name}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/bin</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>copy-resources2</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/${maven.project.name}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.build.directory}</directory>
+									<includes>
+										<include>${maven.project.name}.jar</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

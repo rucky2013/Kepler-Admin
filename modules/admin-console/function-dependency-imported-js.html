@@ -1,0 +1,17 @@
+<script>
+	$("#navigation").html("终端已依赖");
+	//依赖模板
+	var template="<tr><td>#{service}</td><td>#{versionAndCatalog}</td>";
+	
+	jQuery.ajax({
+		type : "GET",
+		url : "/api/dependency/imported?sid=" + param("sid"),
+		success : function callback(data) {
+			$("#imported").empty();
+			$(data).each(function(index, service){
+				//追加分组
+				$("#imported").append(template.replace("#{service}", service.service).replace("#{versionAndCatalog}", service.versionAndCatalog));
+			});
+		}
+	});
+</script>

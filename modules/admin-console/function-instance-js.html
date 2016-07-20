@@ -1,0 +1,52 @@
+<script>
+	$("#navigation").html("终端管理");
+	var template = "<tr><td>#{host}</td><td>#{group}</td><td>#{sid}</td><td><button id=\"config_#{sid}\" data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-cog\"></button></td><td><button id=\"status_#{sid}\" data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-desktop\"></button></td><td><button id=\"dependency_#{sid}\" data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-sitemap\"></button></td></td><td><button id=\"chart_#{sid}\" data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-line-chart\"></button></td></tr>";
+	//Select for Groups
+	function groups() {
+		jQuery.ajax({
+			type : "GET",
+			url : "/api/status/groups",
+			success : function callback(data) {
+				$("#finder_groups").empty(); 
+				$("#finder_groups").prepend("<option value=''>Select Group ... </option>");
+				$(data).each(function(index, element){
+					$("#finder_groups").append("<option value='" + element + "'>" + element + "</option>"); 
+				});
+			}
+		});
+	}
+
+	function loading(data, element) {
+		$("#service-tab_tbody").empty();
+		$(data).each(function(index, each){
+			//加载服务项
+			$("#service-tab_tbody").append(template.replace("#{host}", each.host).replaceAll("#{group}", each.group).replaceAll("#{sid}", each.sid));
+			//绑定图表,依赖按钮等
+			$("#chart_" + each.sid).click(function() {
+				window.open("/?function=function-chart-status&sid=" + each.sid, "_blank");
+			});
+			$("#dependency_" + each.sid).click(function() {
+				window.open("/?function=function-dependency-imported&sid=" + each.sid, "_blank");
+			});
+			$("#status_" + each.sid).click(function() {
+				window.open("/?function=function-status&sid=" + each.sid + "&host=" + each.host, "_blank");
+			});
+			$("#config_" + each.sid).click(function() {
+				window.open("/?function=function-config&sid=" + each.sid + "&host=" + each.host, "_blank");
+			});
+		});
+	}
+	//Group变化
+	$("#finder_groups").change(function() {
+		$("#finder_tags").val("");
+		jQuery.ajax({
+			type : "GET",
+			url : "/api/status/group?group=" + $("#finder_groups").val(),
+			success : loading
+		});
+	});
+	
+	$(document).ready(function() {
+		groups();
+	});
+</script>

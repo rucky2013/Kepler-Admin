@@ -1,22 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util" xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
     http://www.springframework.org/schema/util
 	http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<bean class="com.kepler.collector.StatusHandler">
-		<constructor-arg ref="kepler.mongo.config.status" />
-	</bean>
-
-	<bean class="com.kepler.collector.DependencyHandler">
-		<constructor-arg ref="kepler.mongo.config.dependency" />
-	</bean>
-
-	<bean class="com.kepler.collector.TransferHandler">
-		<constructor-arg index="0" ref="kepler.mongo.config.transfer.minute" />
-		<constructor-arg index="1" ref="kepler.mongo.config.transfer.hour" />
-		<constructor-arg index="2" ref="kepler.mongo.config.transfer.day" />
-	</bean>
+	<import resource="kepler-handler-transfer.xml"/>
+	<import resource="kepler-handler-status.xml"/>
 
 </beans>

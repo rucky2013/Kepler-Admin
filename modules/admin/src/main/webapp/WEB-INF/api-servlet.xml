@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util" xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/util
+	http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<util:list id="beanList">
+				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+			</util:list>
+		</property>
+	</bean>
+
+	<bean class="com.kepler.admin.controller.DashboardController">
+		<constructor-arg ref="kepler.admin.dashboard" />
+	</bean>
+
+	<bean class="com.kepler.admin.controller.DependencyController">
+		<constructor-arg ref="kepler.admin.finder.dependency" />
+	</bean>
+
+	<bean class="com.kepler.admin.controller.AdjustController">
+		<constructor-arg ref="kepler.admin.finder.instance" />
+		<constructor-arg ref="kepler.admin.finder.config" />
+		<constructor-arg ref="kepler.admin.adjust" />
+	</bean>
+
+	<bean class="com.kepler.admin.controller.FinderController">
+		<constructor-arg ref="kepler.admin.finder.instance" />
+	</bean>
+
+	<bean class="com.kepler.admin.controller.StatusController">
+		<constructor-arg ref="kepler.admin.finder.status" />
+	</bean>
+
+	<bean class="com.kepler.admin.controller.ChartController">
+		<constructor-arg ref="kepler.admin.chart" />
+		<constructor-arg ref="kepler.admin.status" />
+	</bean>
+
+	<bean class="com.kepler.admin.controller.MethodController">
+		<constructor-arg ref="kepler.admin.method" />
+	</bean>
+	
+	<bean class="com.kepler.admin.controller.BarChartController">
+		<constructor-arg ref="kepler.admin.chart.bar" />
+	</bean>
+	
+	<bean class="com.kepler.admin.controller.TraceController">
+		<constructor-arg ref="kepler.admin.trace" />
+	</bean>
+	
+</beans>
+
