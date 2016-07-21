@@ -5,9 +5,9 @@ Kepler Admin 是一款专门为使用Kepler框架的服务提供的服务监控�
 - 服务管理
 - 主机管理
 
-系统由**收集器**（kepler-admin-collector）以及**控制台**（kepler-admin-monitor）组成。收集器将各个服务传过来的数据存放到mongodb，然后控制台从mongodb里读出数据进行统计以及展示。
+系统由**收集器**（collector）以及**控制台**（admin）组成。收集器将各个服务传过来的数据存放到mongodb，然后控制台从mongodb里读出数据进行统计以及展示。
 
-<img src="https://raw.githubusercontent.com/Kepler-Framework/Kepler-Images/master/admin_overview.png"/>
+<img src="https://raw.githubusercontent.com/Kepler-Framework/Kepler-Images/master/admin_arch.png"/>
 
 ## 部署 ##
 
