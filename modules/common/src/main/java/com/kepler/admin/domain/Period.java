@@ -3,6 +3,8 @@ package com.kepler.admin.domain;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import com.kepler.KeplerLocalException;
+
 /**
  * 周期
  * 
@@ -13,7 +15,7 @@ public enum Period {
 	DAY, HOUR, MINUTE;
 
 	/**
-	 * 指定毫秒数转换为当前周期
+	 * 指定毫秒数转换为当前周期(同时计算时区偏移量)
 	 * 
 	 * @param millis
 	 * @return
@@ -27,12 +29,12 @@ public enum Period {
 		case MINUTE:
 			return TimeUnit.MINUTES.convert(millis + TimeZone.getDefault().getOffset(millis), TimeUnit.MILLISECONDS);
 		default:
-			return 0;
+			throw new KeplerLocalException("Unkonw period: " + this);
 		}
 	}
 
 	/**
-	 * 当前毫秒数转换为当前周期
+	 * 当前毫秒数转换为当前周期(同时计算时区偏移量)
 	 * 
 	 * @return
 	 */
@@ -55,7 +57,7 @@ public enum Period {
 		case DAY:
 			return period * 24 * 60 * 60 * 1000;
 		default:
-			return 0;
+			throw new KeplerLocalException("Unkonw period: " + this);
 		}
 	}
 }

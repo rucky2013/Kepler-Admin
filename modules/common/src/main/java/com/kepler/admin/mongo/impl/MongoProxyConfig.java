@@ -2,13 +2,13 @@ package com.kepler.admin.mongo.impl;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.kepler.admin.mongo.MongoConfig;
 import com.kepler.admin.mongo.MongoOperation;
 import com.mongodb.AggregationOutput;
 import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.BulkWriteOperation;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -128,9 +128,9 @@ public class MongoProxyConfig implements MongoConfig {
 			return MongoProxyConfig.this.collection.aggregate(Arrays.asList(ops));
 		}
 
-		@SuppressWarnings("unchecked")
-		public List<Object> distinct(String key, DBObject query) {
-			return MongoProxyConfig.this.collection.distinct(key, query);
+		@Override
+		public BulkWriteOperation bulkWrite() {
+			return MongoProxyConfig.this.collection.initializeOrderedBulkOperation();
 		}
 	}
 }

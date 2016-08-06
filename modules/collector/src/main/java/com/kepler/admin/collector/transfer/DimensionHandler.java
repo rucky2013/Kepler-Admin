@@ -9,6 +9,7 @@ import com.kepler.admin.transfer.Feeder;
 import com.kepler.admin.transfer.Transfer;
 import com.kepler.admin.transfer.Transfers;
 import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.BulkWriteOperation;
 import com.mongodb.DBObject;
 
 /**
@@ -19,7 +20,6 @@ import com.mongodb.DBObject;
 public class DimensionHandler implements Feeder {
 
 	// Period, Service ,Version, Host_local_sid, Host_target_sid, Host_local_sid, Method
-	// @See com.kepler.admin.statistics.Statistics
 	private static final DBObject INDEX = BasicDBObjectBuilder.start().add(Dictionary.FIELD_PERIOD, 1).add(Dictionary.FIELD_SERVICE, 1).add(Dictionary.FIELD_VERSION, 1).add(Dictionary.FIELD_HOST_TARGET_SID, 1).add(Dictionary.FIELD_HOST_LOCAL_SID, 1).add(Dictionary.FIELD_METHOD, 1).get();
 
 	private final MongoConfig transfers4minute;
@@ -59,12 +59,11 @@ public class DimensionHandler implements Feeder {
 	 * @param period
 	 * @param query
 	 * @param update
-	 * @param config
+	 * @param batch 批量提交
 	 */
-	private void update4period(long period, DBObject query, DBObject update, MongoConfig config) {
+	private void update4period(long period, DBObject query, DBObject update, BulkWriteOperation batch) {
 		// 更新查询周期
-		query.put(Dictionary.FIELD_PERIOD, period);
-		config.collection().update(query, update, true, false);
+		batch.find(BasicDBObjectBuilder.start(query.toMap()).add(Dictionary.FIELD_PERIOD, period).get()).upsert().updateOne(update);
 	}
 
 	/**
@@ -88,6 +87,10 @@ public class DimensionHandler implements Feeder {
 		long minute = Period.MINUTE.period(timestamp);
 		long hour = Period.HOUR.period(timestamp);
 		long day = Period.DAY.period(timestamp);
+		// 开启Batch
+		BulkWriteOperation batch4minute = this.transfers4minute.collection().bulkWrite();
+		BulkWriteOperation batch4hour = this.transfers4hour.collection().bulkWrite();
+		BulkWriteOperation batch4day = this.transfers4day.collection().bulkWrite();
 		for (Transfers each : transfers) {
 			DBObject query = this.query(each);
 			for (Transfer transfer : each.transfers()) {
@@ -96,12 +99,15 @@ public class DimensionHandler implements Feeder {
 				query.put(Dictionary.FIELD_HOST_LOCAL_SID, transfer.local().sid());
 				DBObject update = this.update(transfer);
 				// 更新周期为分钟
-				this.update4period(minute, query, update, this.transfers4minute);
+				this.update4period(minute, query, update, batch4minute);
 				// 更新周期为小时
-				this.update4period(hour, query, update, this.transfers4hour);
+				this.update4period(hour, query, update, batch4hour);
 				// 更新周期为每天
-				this.update4period(day, query, update, this.transfers4day);
+				this.update4period(day, query, update, batch4day);
 			}
 		}
+		batch4minute.execute();
+		batch4hour.execute();
+		batch4day.execute();
 	}
 }

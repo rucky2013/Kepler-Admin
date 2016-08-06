@@ -10,6 +10,7 @@ import com.kepler.admin.transfer.Transfer;
 import com.kepler.admin.transfer.Transfers;
 import com.kepler.config.PropertiesUtils;
 import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.BulkWriteOperation;
 import com.mongodb.DBObject;
 
 /**
@@ -50,7 +51,7 @@ public class DashboardHandler implements Feeder {
 		return minutes;
 	}
 
-	private DBObject query(long period, long timestamp, Transfers transfers) {
+	private DBObject query(long period, Transfers transfers) {
 		// Query (周期 + Service + Version)
 		BasicDBObjectBuilder query = BasicDBObjectBuilder.start();
 		query.add(Dictionary.FIELD_PERIOD, period);
@@ -59,12 +60,13 @@ public class DashboardHandler implements Feeder {
 		return query.get();
 	}
 
-	private DBObject update(long[] minutes, Report report) {
+	private DBObject update(long[] minutes, Statistics report) {
 		// Update (RTT(除以Total), 访问量, 异常数量)
 		BasicDBObjectBuilder update = BasicDBObjectBuilder.start();
 		update.add(Dictionary.FIELD_FAILED, report.failed());
 		update.add(Dictionary.FIELD_TOTAL, report.total());
 		update.add(Dictionary.FIELD_RTT, report.rtt());
+		// 递增统计, 如果为新条目则创建分钟间隔数据
 		return BasicDBObjectBuilder.start().add("$inc", update.get()).add("$setOnInsert", BasicDBObjectBuilder.start(Dictionary.FIELD_PERIOD_INTERVAL, DashboardHandler.INTERVAL).add(Dictionary.FIELD_PERIOD_MINUTE, minutes).get()).get();
 	}
 
@@ -72,13 +74,22 @@ public class DashboardHandler implements Feeder {
 	public void feed(long timestamp, Collection<Transfers> transfers) {
 		// 周期(区间)
 		long period = (Period.MINUTE.period(timestamp) / DashboardHandler.INTERVAL + 1) * DashboardHandler.INTERVAL;
+		// 开启批量写入
+		BulkWriteOperation batch = this.dashboard.collection().bulkWrite();
 		for (Transfers each : transfers) {
-			Report report = new Report(each);
-			this.dashboard.collection().update(this.query(period, timestamp, each), this.update(this.minutes(period), report), true, false);
+			batch.find(this.query(period, each)).upsert().updateOne(this.update(this.minutes(period), new Statistics(each)));
 		}
+		// 使用默认WriteConcern
+		batch.execute();
 	}
 
-	private class Report {
+	/**
+	 * 统计数值
+	 * 
+	 * @author KimShen
+	 *
+	 */
+	private class Statistics {
 
 		private double rtt;
 
@@ -86,7 +97,7 @@ public class DashboardHandler implements Feeder {
 
 		private long failed;
 
-		private Report(Transfers transfers) {
+		private Statistics(Transfers transfers) {
 			for (Transfer transfer : transfers.transfers()) {
 				this.rtt(transfer.rtt());
 				this.total(transfer.total());
@@ -95,17 +106,17 @@ public class DashboardHandler implements Feeder {
 			}
 		}
 
-		private Report rtt(double rtt) {
+		private Statistics rtt(double rtt) {
 			this.rtt += rtt;
 			return this;
 		}
 
-		private Report total(long total) {
+		private Statistics total(long total) {
 			this.total += total;
 			return this;
 		}
 
-		private Report failed(long failed) {
+		private Statistics failed(long failed) {
 			this.failed += failed;
 			return this;
 		}
@@ -117,10 +128,7 @@ public class DashboardHandler implements Feeder {
 		 */
 		public double rtt() {
 			// 分母判断
-			if (this.total() == 0) {
-				return 0;
-			}
-			return this.rtt;
+			return this.total() == 0 ? 0 : this.rtt;
 		}
 
 		public long total() {

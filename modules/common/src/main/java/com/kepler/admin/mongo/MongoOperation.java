@@ -3,6 +3,7 @@ package com.kepler.admin.mongo;
 import java.util.List;
 
 import com.mongodb.AggregationOutput;
+import com.mongodb.BulkWriteOperation;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.WriteConcern;
@@ -44,7 +45,7 @@ public interface MongoOperation {
 
 	public DBObject findAndModify(DBObject query, DBObject fields, DBObject sort, boolean remove, DBObject update, boolean returnNew, boolean upsert);
 
-	public AggregationOutput aggregate(DBObject... ops);
+	public BulkWriteOperation bulkWrite();
 
-	public List<Object> distinct(String key, DBObject query);
+	public AggregationOutput aggregate(DBObject... ops);
 }

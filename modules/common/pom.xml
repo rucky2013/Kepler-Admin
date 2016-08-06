@@ -6,12 +6,14 @@
 		<version>0.0.6-SNAPSHOT</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
+	<artifactId>kepler-collector-common</artifactId>
+	<packaging>jar</packaging>
+
 	<properties>
 		<maven.project.name>kepler-collector-common</maven.project.name>
 	</properties>
-	<artifactId>kepler-collector-common</artifactId>
-	<packaging>jar</packaging>
-		<build>
+
+	<build>
 		<finalName>${maven.project.name}</finalName>
 		<resources>
 			<resource>
