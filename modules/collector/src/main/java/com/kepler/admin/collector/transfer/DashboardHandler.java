@@ -33,6 +33,9 @@ public class DashboardHandler implements Feeder {
 	public DashboardHandler(MongoConfig dashboard) {
 		super();
 		this.dashboard = dashboard;
+	}
+
+	public void init() {
 		this.dashboard.collection().index(DashboardHandler.INDEX);
 	}
 
@@ -74,13 +77,15 @@ public class DashboardHandler implements Feeder {
 	public void feed(long timestamp, Collection<Transfers> transfers) {
 		// 周期(区间)
 		long period = (Period.MINUTE.period(timestamp) / DashboardHandler.INTERVAL + 1) * DashboardHandler.INTERVAL;
-		// 开启批量写入
-		BulkWriteOperation batch = this.dashboard.collection().bulkWrite();
-		for (Transfers each : transfers) {
-			batch.find(this.query(period, each)).upsert().updateOne(this.update(this.minutes(period), new Statistics(each)));
+		// 检查集合, Bluk必须存在操作才允许提交
+		if (!transfers.isEmpty()) {
+			BulkWriteOperation batch = this.dashboard.collection().bulkWrite();
+			for (Transfers each : transfers) {
+				batch.find(this.query(period, each)).upsert().updateOne(this.update(this.minutes(period), new Statistics(each)));
+			}
+			// 使用默认WriteConcern
+			batch.execute();
 		}
-		// 使用默认WriteConcern
-		batch.execute();
 	}
 
 	/**

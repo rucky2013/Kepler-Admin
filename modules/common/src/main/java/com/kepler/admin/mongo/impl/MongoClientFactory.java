@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.util.CollectionUtils;
 
@@ -15,9 +17,11 @@ import com.mongodb.ServerAddress;
 
 public class MongoClientFactory implements FactoryBean<DB> {
 
-	private static final String HOST_SEPARATOE = ",";
+	private static final Log LOGGER = LogFactory.getLog(MongoClientFactory.class);
 
 	private static final String HOST_PORT_SEPARATOE = ":";
+
+	private static final String HOST_SEPARATOE = ",";
 
 	private final String username;
 
@@ -37,19 +41,23 @@ public class MongoClientFactory implements FactoryBean<DB> {
 		this.password = password;
 	}
 
-	@Override
-	public DB getObject() throws Exception {
+	public void init() throws Exception {
 		// 服务地址
 		List<ServerAddress> addresses = this.address();
 		// 权鉴凭证
 		List<MongoCredential> credentials = this.credentials(this.username, this.db, this.password);
 		this.client = this.create(addresses, credentials);
-		// 获取实际DB
-		return this.client.getDB(this.db);
+		MongoClientFactory.LOGGER.info("Mongo replicaset: " + this.client.getReplicaSetStatus());
 	}
 
 	public void destroy() {
 		this.client.close();
+	}
+
+	@Override
+	public DB getObject() throws Exception {
+		// 获取实际DB
+		return this.client.getDB(this.db);
 	}
 
 	/**
@@ -86,7 +94,8 @@ public class MongoClientFactory implements FactoryBean<DB> {
 
 	private ServerAddress generate(String host) throws Exception {
 		String[] hostAndPort = host.split(MongoClientFactory.HOST_PORT_SEPARATOE);
-		return new ServerAddress(hostAndPort[0], Integer.valueOf(hostAndPort[1]));
+		MongoClientFactory.LOGGER.info("Mongo server host: " + Arrays.toString(hostAndPort));
+		return hostAndPort.length == 1 ? new ServerAddress(hostAndPort[0]) : new ServerAddress(hostAndPort[0], Integer.valueOf(hostAndPort[1]));
 	}
 
 	/**

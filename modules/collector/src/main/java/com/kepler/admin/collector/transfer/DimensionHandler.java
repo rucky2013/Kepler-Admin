@@ -33,6 +33,9 @@ public class DimensionHandler implements Feeder {
 		this.transfers4minute = transfers4minute;
 		this.transfers4hour = transfers4hour;
 		this.transfers4day = transfers4day;
+	}
+
+	public void init() {
 		this.transfers4minute.collection().index(DimensionHandler.INDEX);
 		this.transfers4hour.collection().index(DimensionHandler.INDEX);
 		this.transfers4day.collection().index(DimensionHandler.INDEX);
@@ -87,27 +90,30 @@ public class DimensionHandler implements Feeder {
 		long minute = Period.MINUTE.period(timestamp);
 		long hour = Period.HOUR.period(timestamp);
 		long day = Period.DAY.period(timestamp);
-		// 开启Batch
-		BulkWriteOperation batch4minute = this.transfers4minute.collection().bulkWrite();
-		BulkWriteOperation batch4hour = this.transfers4hour.collection().bulkWrite();
-		BulkWriteOperation batch4day = this.transfers4day.collection().bulkWrite();
-		for (Transfers each : transfers) {
-			DBObject query = this.query(each);
-			for (Transfer transfer : each.transfers()) {
-				// 更新发送主机和接收主机
-				query.put(Dictionary.FIELD_HOST_TARGET_SID, transfer.target().sid());
-				query.put(Dictionary.FIELD_HOST_LOCAL_SID, transfer.local().sid());
-				DBObject update = this.update(transfer);
-				// 更新周期为分钟
-				this.update4period(minute, query, update, batch4minute);
-				// 更新周期为小时
-				this.update4period(hour, query, update, batch4hour);
-				// 更新周期为每天
-				this.update4period(day, query, update, batch4day);
+		// 检查集合, Bluk必须存在操作才允许提交
+		if (!transfers.isEmpty()) {
+			// 开启Batch
+			BulkWriteOperation batch4minute = this.transfers4minute.collection().bulkWrite();
+			BulkWriteOperation batch4hour = this.transfers4hour.collection().bulkWrite();
+			BulkWriteOperation batch4day = this.transfers4day.collection().bulkWrite();
+			for (Transfers each : transfers) {
+				DBObject query = this.query(each);
+				for (Transfer transfer : each.transfers()) {
+					// 更新发送主机和接收主机
+					query.put(Dictionary.FIELD_HOST_TARGET_SID, transfer.target().sid());
+					query.put(Dictionary.FIELD_HOST_LOCAL_SID, transfer.local().sid());
+					DBObject update = this.update(transfer);
+					// 更新周期为分钟
+					this.update4period(minute, query, update, batch4minute);
+					// 更新周期为小时
+					this.update4period(hour, query, update, batch4hour);
+					// 更新周期为每天
+					this.update4period(day, query, update, batch4day);
+				}
 			}
+			batch4minute.execute();
+			batch4hour.execute();
+			batch4day.execute();
 		}
-		batch4minute.execute();
-		batch4hour.execute();
-		batch4day.execute();
 	}
 }

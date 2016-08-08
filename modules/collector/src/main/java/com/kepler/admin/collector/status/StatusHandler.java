@@ -28,8 +28,11 @@ public class StatusHandler implements Feeder {
 
 	public StatusHandler(MongoConfig status) {
 		super();
-		this.status.collection().index(StatusHandler.INDEX);
 		this.status = status;
+	}
+
+	public void init() {
+		this.status.collection().index(StatusHandler.INDEX);
 	}
 
 	public void feed(Host host, Map<String, Object> status) {

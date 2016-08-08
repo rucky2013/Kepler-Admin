@@ -5,7 +5,7 @@
     http://www.springframework.org/schema/util
     http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<bean id="kepler.mongo" class="com.kepler.admin.mongo.impl.MongoClientFactory">
+	<bean id="kepler.mongo" class="com.kepler.admin.mongo.impl.MongoClientFactory" init-method="init" destroy-method="destroy">
 		<constructor-arg name="host" value="#{T(com.kepler.config.PropertiesUtils).get('com.mongodb.mongoclient.host')}" />
 		<constructor-arg name="username" value="#{T(com.kepler.config.PropertiesUtils).get('com.mongodb.mongoclient.username')}" />
 		<constructor-arg name="password" value="#{T(com.kepler.config.PropertiesUtils).get('com.mongodb.mongoclient.password')}" />
