@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util" xsi:schemaLocation="http://www.springframework.org/schema/beans 
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 	http://www.springframework.org/schema/util
 	http://www.springframework.org/schema/util/spring-util-3.0.xsd">
@@ -44,14 +45,18 @@
 	<bean class="com.kepler.admin.controller.MethodController">
 		<constructor-arg ref="kepler.admin.method" />
 	</bean>
-	
+
 	<bean class="com.kepler.admin.controller.BarChartController">
 		<constructor-arg ref="kepler.admin.chart.bar" />
 	</bean>
-	
+
+	<bean class="com.kepler.admin.controller.GenericController">
+		<constructor-arg ref="kepler.generic.reflect" />
+	</bean>
+
 	<bean class="com.kepler.admin.controller.TraceController">
 		<constructor-arg ref="kepler.admin.trace" />
 	</bean>
-	
+
 </beans>
 

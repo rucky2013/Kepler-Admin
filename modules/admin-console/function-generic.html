@@ -1,0 +1,34 @@
+<div class="row-xs">
+	<select id="finder_groups" style="width: 200px;">
+		<option value="">Select Group ...</option>
+	</select> 
+	<select id="finder_services" style="width: 750px;">
+		<option value="">Select Service ...</option>
+	</select>
+</div>
+<br></br>
+<div class="tabbable">
+	<ul class="nav nav-tabs" id="myTab">
+		<li class="active">
+			<a id="title_request" data-toggle="tab" href="#tab_request" aria-expanded="true">
+				请求
+			</a>
+		</li>
+		<li class="">
+			<a id="title_response" data-toggle="tab" href="#tab_response" aria-expanded="false">
+				响应
+			</a>
+		</li>
+	</ul>
+</div>
+<div class="tab-content">
+	<div id="tab_request" class="tab-pane fade active in">
+		<textarea id="request" rows="25" cols="130"></textarea>
+	</div>
+	<div id="tab_response" class="tab-pane fade">
+		<textarea id="response" rows="25" cols="130"></textarea>
+	</div>
+</div>
+<span id="invoke" class="btn btn-info btn-sm tooltip-info" data-rel="tooltip" data-placement="bottom" title="" data-original-title="Bottm Info">Go ...</span>
+<span id="format" class="btn btn-info btn-sm tooltip-info" data-rel="tooltip" data-placement="bottom" title="" data-original-title="Bottm Info">Format</span>
+

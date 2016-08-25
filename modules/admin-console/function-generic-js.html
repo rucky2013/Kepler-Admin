@@ -1,0 +1,89 @@
+<script type="text/javascript">
+    $("#navigation").html("泛化调用");
+    
+  	//Select for Groups
+	function groups() {
+		jQuery.ajax({
+			type : "GET",
+			url : "/api/finder/groups",
+			success : function callback(data) {
+				$("#finder_groups").empty(); 
+				$("#finder_groups").prepend("<option value=''>Select Group ... </option>");
+				$(data).each(function(index, element){
+					$("#finder_groups").append("<option value='" + element + "'>" + element + "</option>"); 
+				});
+			}
+		});
+	}
+  	
+	function loading(data, element) {
+		$("#finder_services").empty(); 
+		$("#finder_services").prepend("<option value=''>Select Service ... </option>");
+		$(data).each(function(index, each){
+			$("#finder_services").append("<option value='" + each.service + " " + each.versionAndCatalog + "'>" + each.service + "(" + each.versionAndCatalog + ")" + "</option>"); 
+		});
+	}
+	
+	// 格式化Json并回写指定Element
+	function format(json, element){
+		if (typeof(json) == 'string') {
+            try {
+            	json = JSON.parse(json);
+            } catch (err) {
+            }
+        }
+		element.val(JSON.stringify(json, null, 6));
+	}
+  	
+	//Group变化
+	$("#finder_groups").change(function() {
+		// 重置
+		$("#request").val("");
+		$("#response").val("");
+		jQuery.ajax({
+			type : "GET",
+			url : "/api/finder/service/group?group=" + $("#finder_groups").val(),
+			success : loading
+		});
+	});
+	
+	//Service变化
+	$("#finder_services").change(function() {
+		// 重置
+		$("#request").val("");
+		$("#response").val("");
+		var services = $("#finder_services").find('option:selected').val().split(" ");
+		// 构建基础Request
+		var request = new Object();
+		request['service'] = services[0];
+		request['version'] = services[1];
+		request['catalog'] = "";
+		request['method'] = "请填写方法名称";
+		request['classes'] = [];
+		request['datas'] = [];
+		// 格式化
+		format(request, $("#request"));
+	});
+	
+	$("#format").click(function() {
+		format($("#request").val(), $("#request"));
+	});
+	
+	$("#invoke").click(function() {
+	 	jQuery.ajax({
+			type : "POST",
+			url : "/api/generic",
+			data : $("#request").val(), 
+			contentType : "application/json;utf-8",
+			success : function(data) {
+				$("#title_response").trigger("click");
+				// 格式化Response
+				format(data, $("#response"));
+			}
+		}); 
+	});
+  
+	$(document).ready(function() {
+		groups();
+	});
+</script>
