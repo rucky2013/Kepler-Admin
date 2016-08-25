@@ -16,6 +16,21 @@
 		});
 	}
   	
+	//Select fot Tags
+	function tags() {
+		jQuery.ajax({
+			type : "GET",
+			url : "/api/finder/tags",
+			success : function callback(data) {
+				$("#finder_tags").empty(); 
+				$("#finder_tags").prepend("<option value=''>Select Tag ... </option>");
+				$(data).each(function(index, element){
+					$("#finder_tags").append("<option value='" + element + "'>" + element + "</option>"); 
+				});
+			}
+		});
+	}
+  	
 	function loading(data, element) {
 		$("#finder_services").empty(); 
 		$("#finder_services").prepend("<option value=''>Select Service ... </option>");
@@ -35,7 +50,41 @@
 		element.val(JSON.stringify(json, null, 6));
 	}
   	
-	//Group变化
+	// 自动填充
+	function automatic(keep) {
+		// 重置Response
+		$("#response").val("");
+		// 当前所选服务
+		var services = $("#finder_services").find('option:selected').val().split(" ");
+		// 当前使用请求
+		var current = $("#request").val() != "" ? JSON.parse($("#request").val()) : null;
+		// 构建基础Request
+		var request = new Object();
+		request['service'] = services[0];
+		request['version'] = services[1];
+		request['catalog'] = "";
+		request['tag'] = $("#finder_tags").find('option:selected').val();
+		// 如果选择保留参数并且已存在历史参数则填充
+		if(keep && current != null){
+			request['method'] = current.method;
+			request['classes'] = current.classes;
+			request['datas'] = current.datas;
+		}else{
+			// 默认值
+			request['method'] = "请填写方法名称";
+			request['classes'] = [];
+			request['datas'] = [];
+		}
+		// 格式化
+		format(request, $("#request"));
+	}
+	
+	// Tag变化
+	$("#finder_tags").change(function() {
+		automatic(true);
+	});
+	
+	// Group变化
 	$("#finder_groups").change(function() {
 		// 重置
 		$("#request").val("");
@@ -47,24 +96,12 @@
 		});
 	});
 	
-	//Service变化
+	// Service变化
 	$("#finder_services").change(function() {
-		// 重置
-		$("#request").val("");
-		$("#response").val("");
-		var services = $("#finder_services").find('option:selected').val().split(" ");
-		// 构建基础Request
-		var request = new Object();
-		request['service'] = services[0];
-		request['version'] = services[1];
-		request['catalog'] = "";
-		request['method'] = "请填写方法名称";
-		request['classes'] = [];
-		request['datas'] = [];
-		// 格式化
-		format(request, $("#request"));
+		automatic(false);
 	});
 	
+	// 格式化JSON
 	$("#format").click(function() {
 		format($("#request").val(), $("#request"));
 	});
@@ -82,8 +119,15 @@
 			}
 		}); 
 	});
+	
+	$("#clear").click(function() {
+		// 重置
+		$("#request").val("");
+		$("#response").val("");
+	});
   
 	$(document).ready(function() {
 		groups();
+		tags();
 	});
 </script>

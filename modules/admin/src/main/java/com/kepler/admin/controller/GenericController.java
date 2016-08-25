@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kepler.generic.reflect.GenericService;
+import com.kepler.header.HeadersContext;
 import com.kepler.header.impl.TraceContext;
+import com.kepler.host.Host;
 import com.kepler.service.Service;
 
 /**
@@ -22,9 +24,12 @@ public class GenericController {
 
 	private final GenericService generic;
 
-	public GenericController(GenericService generic) {
+	private final HeadersContext headers;
+
+	public GenericController(GenericService generic, HeadersContext headers) {
 		super();
 		this.generic = generic;
+		this.headers = headers;
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -32,6 +37,7 @@ public class GenericController {
 	public Response generic(@RequestBody Request request) throws Throwable {
 		StopWatch watch = this.watch();
 		try {
+			this.headers.get().put(Host.TAG_KEY, request.getTag());
 			return new Response(this.generic.invoke(request.getMetadata(), request.getMethod(), request.getClasses(), request.getDatas()), watch.getTotalTimeMillis());
 		} catch (Throwable e) {
 			return new Response(e.getMessage(), watch.getTotalTimeMillis());
@@ -57,6 +63,8 @@ public class GenericController {
 	 */
 	public static class Request {
 
+		private String tag;
+
 		private String method;
 
 		private String service;
@@ -68,6 +76,14 @@ public class GenericController {
 		private Object[] datas;
 
 		private String[] classes;
+
+		public String getTag() {
+			return this.tag;
+		}
+
+		public void setTag(String tag) {
+			this.tag = tag;
+		}
 
 		public String getMethod() {
 			Assert.notNull(this.method, "Method can not be null");
@@ -135,7 +151,7 @@ public class GenericController {
 	public static class Response {
 
 		private final String throwable;
-		
+
 		private final Object response;
 
 		private final long elapse;
