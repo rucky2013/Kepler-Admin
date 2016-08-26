@@ -5,13 +5,8 @@
     http://www.springframework.org/schema/util
 	http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<import resource="classpath:kepler-trace-extension.xml" />
-	<import resource="classpath:kepler-core.xml" />
-	<import resource="kepler-generic-history.xml" />
-	<import resource="kepler-statistics.xml" />
-	<import resource="kepler-context.xml" />
-	<import resource="kepler-curator.xml" />
-	<import resource="kepler-service.xml" />
-	<import resource="kepler-mongo.xml" />
+	<bean id="kepler.generic.history" class="com.kepler.admin.generic.impl.DefaultHistory">
+		<constructor-arg ref="kepler.mongo.generic" />
+	</bean>
 
 </beans>

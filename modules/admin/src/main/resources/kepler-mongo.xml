@@ -44,6 +44,12 @@
 		<constructor-arg ref="kepler.mongo" />
 	</bean>
 
+	<bean id="kepler.mongo.generic" class="com.kepler.admin.mongo.impl.MongoProxyConfig">
+		<constructor-arg value="generic" />
+		<constructor-arg ref="kepler.mongo" />
+	</bean>
+
+
 	<bean id="kepler.mongo.trace" class="com.kepler.admin.mongo.impl.MongoProxyConfig">
 		<constructor-arg value="trace" />
 		<constructor-arg ref="kepler.mongo.tracer" />

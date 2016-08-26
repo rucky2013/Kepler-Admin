@@ -41,13 +41,19 @@
 	
 	// 格式化Json并回写指定Element
 	function format(json, element){
+		// 如果为String则尝试解析JSON Object
 		if (typeof(json) == 'string') {
             try {
             	json = JSON.parse(json);
             } catch (err) {
             }
         }
-		element.val(JSON.stringify(json, null, 6));
+		// 如果(解析后)为JSON Object则格式化
+		if(typeof(json) == 'object') {
+			element.val(JSON.stringify(json, null, 6));
+		}else{
+			alert("请检查JSON");
+		}
 	}
   	
 	// 自动填充
@@ -101,12 +107,20 @@
 		automatic(false);
 	});
 	
+	$("#clear").click(function() {
+		// 重置
+		$("#request").val("");
+		$("#response").val("");
+	});
+
 	// 格式化JSON
 	$("#format").click(function() {
 		format($("#request").val(), $("#request"));
 	});
 	
 	$("#invoke").click(function() {
+		// 格式化Request
+		format($("#request").val(), $("#request"));
 	 	jQuery.ajax({
 			type : "POST",
 			url : "/api/generic",
@@ -120,12 +134,27 @@
 		}); 
 	});
 	
-	$("#clear").click(function() {
-		// 重置
-		$("#request").val("");
-		$("#response").val("");
+	$("#restore").click(function() {
+		try {
+			var request = JSON.parse($("#request").val());
+			jQuery.ajax({
+				type : "GET",
+				url : "/api/generic?service=" + request.service + "&version=" + request.version + "&catalog=" + request.catalog + "&method=" + request.method,
+				data : $("#request").val(), 
+				success : function(data) {
+					if(data == null || data == ""){
+						alert("没有可用数据");
+					}else{
+						format(data, $("#request"));
+						$("#title_request").trigger("click");
+					}
+				}
+			}); 
+        } catch (err) {
+			alert("请检查JSON");
+		}
 	});
-  
+	
 	$(document).ready(function() {
 		groups();
 		tags();

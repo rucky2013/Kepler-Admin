@@ -28,9 +28,9 @@ public interface Dictionary {
 	public static final String FIELD_METHOD = "method";
 	
 	public static final String FIELD_FAILED = "failed";
-
+	
 	public static final String FIELD_SERVICE = "service";
-
+	
 	public static final String FIELD_SERVICES = "services";
 
 	public static final String FIELD_VERSION = "version";

@@ -51,6 +51,7 @@
 	</bean>
 
 	<bean class="com.kepler.admin.controller.GenericController">
+		<constructor-arg ref="kepler.generic.history" />
 		<constructor-arg ref="kepler.generic.reflect" />
 		<constructor-arg ref="kepler.header.context" />
 	</bean>
