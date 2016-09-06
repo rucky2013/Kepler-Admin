@@ -6,5 +6,6 @@
 
 	<import resource="kepler-handler-transfer.xml"/>
 	<import resource="kepler-handler-status.xml"/>
+	<import resource="kepler-handler-trace.xml"/>
 
 </beans>

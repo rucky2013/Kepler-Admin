@@ -86,34 +86,54 @@ public class DimensionHandler implements Feeder {
 
 	@Override
 	public void feed(long timestamp, Collection<Transfers> transfers) {
-		// 周期快照
-		long minute = Period.MINUTE.period(timestamp);
-		long hour = Period.HOUR.period(timestamp);
-		long day = Period.DAY.period(timestamp);
-		// 检查集合, Bluk必须存在操作才允许提交
+		// 检查集合
 		if (!transfers.isEmpty()) {
 			// 开启Batch
 			BulkWriteOperation batch4minute = this.transfers4minute.collection().bulkWrite();
 			BulkWriteOperation batch4hour = this.transfers4hour.collection().bulkWrite();
 			BulkWriteOperation batch4day = this.transfers4day.collection().bulkWrite();
-			for (Transfers each : transfers) {
-				DBObject query = this.query(each);
-				for (Transfer transfer : each.transfers()) {
-					// 更新发送主机和接收主机
-					query.put(Dictionary.FIELD_HOST_TARGET_SID, transfer.target().sid());
-					query.put(Dictionary.FIELD_HOST_LOCAL_SID, transfer.local().sid());
-					DBObject update = this.update(transfer);
-					// 更新周期为分钟
-					this.update4period(minute, query, update, batch4minute);
-					// 更新周期为小时
-					this.update4period(hour, query, update, batch4hour);
-					// 更新周期为每天
-					this.update4period(day, query, update, batch4day);
-				}
+			// 提交并产生任务后执行批量
+			if (this.submit(timestamp, transfers, batch4minute, batch4hour, batch4day)) {
+				batch4minute.execute();
+				batch4hour.execute();
+				batch4day.execute();
 			}
-			batch4minute.execute();
-			batch4hour.execute();
-			batch4day.execute();
 		}
+	}
+
+	/**
+	 * 提交批量任务
+	 * 
+	 * @param timestamp
+	 * @param transfers
+	 * @param batch4minute
+	 * @param batch4hour
+	 * @param batch4day
+	 * @return
+	 */
+	private boolean submit(long timestamp, Collection<Transfers> transfers, BulkWriteOperation batch4minute, BulkWriteOperation batch4hour, BulkWriteOperation batch4day) {
+		// 周期快照
+		long minute = Period.MINUTE.period(timestamp);
+		long hour = Period.HOUR.period(timestamp);
+		long day = Period.DAY.period(timestamp);
+		// 是否产生任务(默认False)
+		boolean submited = false;
+		for (Transfers each : transfers) {
+			DBObject query = this.query(each);
+			for (Transfer transfer : each.transfers()) {
+				// 更新发送主机和接收主机
+				query.put(Dictionary.FIELD_HOST_TARGET_SID, transfer.target().sid());
+				query.put(Dictionary.FIELD_HOST_LOCAL_SID, transfer.local().sid());
+				DBObject update = this.update(transfer);
+				// 更新周期为分钟
+				this.update4period(minute, query, update, batch4minute);
+				// 更新周期为小时
+				this.update4period(hour, query, update, batch4hour);
+				// 更新周期为每天
+				this.update4period(day, query, update, batch4day);
+				submited = true;
+			}
+		}
+		return submited;
 	}
 }

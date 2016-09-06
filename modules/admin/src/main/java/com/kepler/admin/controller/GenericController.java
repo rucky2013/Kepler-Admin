@@ -96,7 +96,7 @@ public class GenericController {
 		}
 
 		public String getTrace() {
-			return TraceContext.trace();
+			return TraceContext.get();
 		}
 
 		public long getElapse() {
