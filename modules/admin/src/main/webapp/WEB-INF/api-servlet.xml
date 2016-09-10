@@ -15,14 +15,14 @@
 		</property>
 	</bean>
 
-	<bean class="com.kepler.admin.controller.DashboardController">
-		<constructor-arg ref="kepler.admin.dashboard" />
-	</bean>
-
 	<bean class="com.kepler.admin.controller.DependencyController">
 		<constructor-arg ref="kepler.admin.finder.dependency" />
 	</bean>
-
+	
+	<bean class="com.kepler.admin.controller.TerminalController">
+		<constructor-arg ref="kepler.admin.finder.terminal" />
+	</bean>
+	
 	<bean class="com.kepler.admin.controller.AdjustController">
 		<constructor-arg ref="kepler.admin.finder.instance" />
 		<constructor-arg ref="kepler.admin.finder.config" />
@@ -33,31 +33,27 @@
 		<constructor-arg ref="kepler.admin.finder.instance" />
 	</bean>
 
-	<bean class="com.kepler.admin.controller.StatusController">
-		<constructor-arg ref="kepler.admin.finder.status" />
-	</bean>
-
-	<bean class="com.kepler.admin.controller.ChartController">
-		<constructor-arg ref="kepler.admin.chart" />
-		<constructor-arg ref="kepler.admin.status" />
-	</bean>
-
-	<bean class="com.kepler.admin.controller.MethodController">
-		<constructor-arg ref="kepler.admin.method" />
-	</bean>
-
 	<bean class="com.kepler.admin.controller.BarChartController">
 		<constructor-arg ref="kepler.admin.chart.bar" />
 	</bean>
 
 	<bean class="com.kepler.admin.controller.GenericController">
-		<constructor-arg ref="kepler.generic.history" />
+		<constructor-arg ref="kepler.generic.template" />
 		<constructor-arg ref="kepler.generic.reflect" />
 		<constructor-arg ref="kepler.header.context" />
 	</bean>
 
 	<bean class="com.kepler.admin.controller.TraceController">
 		<constructor-arg ref="kepler.admin.trace" />
+	</bean>
+	
+		<bean class="com.kepler.admin.controller.ChartController">
+		<constructor-arg ref="kepler.admin.chart" />
+		<constructor-arg ref="kepler.admin.status" />
+	</bean>
+
+	<bean class="com.kepler.admin.controller.MethodController">
+		<constructor-arg ref="kepler.admin.method" />
 	</bean>
 
 </beans>

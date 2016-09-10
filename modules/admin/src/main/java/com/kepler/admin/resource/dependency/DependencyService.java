@@ -4,7 +4,7 @@ import com.kepler.admin.domain.ServiceAndVersion;
 import com.kepler.service.imported.ImportedService;
 
 /**
- * 依赖服务
+ * 依赖服务及依赖方信息
  * 
  * @author kim
  *
@@ -19,7 +19,17 @@ public interface DependencyService  {
 	 */
 	public String path();
 
+	/**
+	 * 服务依赖(依赖服务的Host + 被依赖服务)
+	 * 
+	 * @return
+	 */
 	public ImportedService imported();
 	
+	/**
+	 * 被依赖服务, new ServiceAndVersion(ImportedService.service(), ImportedService.versionAndCatalog());
+	 * 
+	 * @return
+	 */
 	public ServiceAndVersion dependency();
 }

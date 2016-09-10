@@ -1,4 +1,4 @@
-package com.kepler.admin.resource.status;
+package com.kepler.admin.resource.terminal;
 
 import java.util.Collection;
 
@@ -8,7 +8,7 @@ import java.util.Collection;
 public interface TerminalStatusFinder {
 
 	/**
-	 * Group对应Status集合
+	 * 业务分组对应终端状态集合
 	 * 
 	 * @param group
 	 * @return
@@ -16,7 +16,7 @@ public interface TerminalStatusFinder {
 	public Collection<TerminalStatus> group(String group);
 
 	/**
-	 * Group集合(含客户端)
+	 * 业务分组集合(含客户端)
 	 * 
 	 * @param group
 	 * @return
@@ -24,7 +24,7 @@ public interface TerminalStatusFinder {
 	public Collection<String> groups();
 
 	/**
-	 * SID对应Status
+	 * SID对应终端状态
 	 * 
 	 * @param sid
 	 * @return

@@ -18,7 +18,6 @@ import com.kepler.admin.statistics.method.MethodInvoker;
 import com.kepler.admin.statistics.method.MethodInvokerService;
 import com.kepler.admin.statistics.method.SortBy;
 import com.mongodb.AggregationOutput;
-import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 
@@ -27,8 +26,16 @@ import com.mongodb.DBObject;
  */
 public class MethodInvokerServiceImpl extends Statistics implements MethodInvokerService {
 
+	private static final DBObject PROJECT_INSTANCE = Statistics.project(BasicDBObjectBuilder.start().add(Dictionary.FIELD_SERVICE, "$_id." + Dictionary.FIELD_SERVICE).add(Dictionary.FIELD_VERSION, "$_id." + Dictionary.FIELD_VERSION).add(Dictionary.FIELD_HOST_TARGET_SID, "$_id." + Dictionary.FIELD_HOST_TARGET_SID).add(Dictionary.FIELD_METHOD, "$_id." + Dictionary.FIELD_METHOD).add(Dictionary.FIELD_HOST_TARGET_SID, "$_id." + Dictionary.FIELD_HOST_TARGET_SID).get());
+
+	private static final DBObject PROJECT_SERVICE = Statistics.project(BasicDBObjectBuilder.start().add(Dictionary.FIELD_SERVICE, "$_id." + Dictionary.FIELD_SERVICE).add(Dictionary.FIELD_VERSION, "$_id." + Dictionary.FIELD_VERSION).add(Dictionary.FIELD_HOST_TARGET_SID, "$_id." + Dictionary.FIELD_HOST_TARGET_SID).add(Dictionary.FIELD_METHOD, "$_id." + Dictionary.FIELD_METHOD).get());
+
+	private static final DBObject GROUP_INSTANCE = Statistics.group(BasicDBObjectBuilder.start().add(Dictionary.FIELD_SERVICE, "$" + Dictionary.FIELD_SERVICE).add(Dictionary.FIELD_VERSION, "$" + Dictionary.FIELD_VERSION).add(Dictionary.FIELD_METHOD, "$" + Dictionary.FIELD_METHOD).add(Dictionary.FIELD_HOST_TARGET_SID, "$" + Dictionary.FIELD_HOST_TARGET_SID).get());
+
+	private static final DBObject GROUP_SERVICE = Statistics.group(BasicDBObjectBuilder.start().add(Dictionary.FIELD_SERVICE, "$" + Dictionary.FIELD_SERVICE).add(Dictionary.FIELD_VERSION, "$" + Dictionary.FIELD_VERSION).add(Dictionary.FIELD_METHOD, "$" + Dictionary.FIELD_METHOD).get());
+
 	private final InstanceFinder instanceFinder;
-	
+
 	public MethodInvokerServiceImpl(MongoConfig transferDay, MongoConfig transferHour, MongoConfig transferMinute, InstanceFinder instanceFinder) {
 		super();
 		super.configs(transferDay, transferHour, transferMinute);
@@ -36,63 +43,28 @@ public class MethodInvokerServiceImpl extends Statistics implements MethodInvoke
 	}
 
 	@Override
-	public List<MethodInvoker> methods4Service(String service, String versionAndCatalog, Period period, int offset) {
-		DBObject condition = super.condition(service, versionAndCatalog, period, offset);
-		// Group 聚合ID
-		BasicDBObjectBuilder _id = BasicDBObjectBuilder.start();
-		_id.add(Dictionary.FIELD_SERVICE, "$" + Dictionary.FIELD_SERVICE);
-		_id.add(Dictionary.FIELD_VERSION, "$" + Dictionary.FIELD_VERSION);
-		_id.add(Dictionary.FIELD_METHOD, "$" + Dictionary.FIELD_METHOD);
-		// Group SUM
-		BasicDBObjectBuilder builder4group = BasicDBObjectBuilder.start();
-		builder4group.add("_id", _id.get());
-		builder4group.add(Dictionary.FIELD_RTT, new BasicDBObject("$sum", "$" + Dictionary.FIELD_RTT));
-		builder4group.add(Dictionary.FIELD_TOTAL, new BasicDBObject("$sum", "$" + Dictionary.FIELD_TOTAL));
-		builder4group.add(Dictionary.FIELD_TIMEOUT, new BasicDBObject("$sum", "$" + Dictionary.FIELD_TIMEOUT));
-		builder4group.add(Dictionary.FIELD_EXCEPTION, new BasicDBObject("$sum", "$" + Dictionary.FIELD_EXCEPTION));
-		DBObject group = BasicDBObjectBuilder.start("$group", builder4group.get()).get();
-		// Group Project
-		BasicDBObjectBuilder builder4project = BasicDBObjectBuilder.start();
-		builder4project.add(Dictionary.FIELD_SERVICE, "$_id." + Dictionary.FIELD_SERVICE);
-		builder4project.add(Dictionary.FIELD_VERSION, "$_id." + Dictionary.FIELD_VERSION);
-		builder4project.add(Dictionary.FIELD_METHOD, "$_id." + Dictionary.FIELD_METHOD);
-		builder4project.add(Dictionary.FIELD_RTT, "$" + Dictionary.FIELD_RTT);
-		builder4project.add(Dictionary.FIELD_TOTAL, "$" + Dictionary.FIELD_TOTAL);
-		builder4project.add(Dictionary.FIELD_TIMEOUT, "$" + Dictionary.FIELD_TIMEOUT);
-		builder4project.add(Dictionary.FIELD_EXCEPTION, "$" + Dictionary.FIELD_EXCEPTION);
-		DBObject project = BasicDBObjectBuilder.start("$project", builder4project.get()).get();
-		return new MongoMethods(offset, super.configs.get(period).collection().aggregate(condition, group, project));
+	public List<MethodInvoker> methods4service(String service, String versionAndCatalog, Period period, int offset, int length) {
+		DBObject condition = super.condition(service, versionAndCatalog, period, offset, length);
+		return new MongoMethods(offset, super.configs.get(period).collection().aggregate(condition, MethodInvokerServiceImpl.GROUP_SERVICE, MethodInvokerServiceImpl.PROJECT_SERVICE));
 	}
 
 	@Override
-	public List<MethodInvoker> methods(String sid, String service, String versionAndCatalog, Period period, int offset) {
-		DBObject condition = super.condition(sid, service, versionAndCatalog, period, offset);
-		// Group 聚合ID
-		BasicDBObjectBuilder _id = BasicDBObjectBuilder.start();
-		_id.add(Dictionary.FIELD_METHOD, "$" + Dictionary.FIELD_METHOD);
-		_id.add(Dictionary.FIELD_SERVICE, "$" + Dictionary.FIELD_SERVICE);
-		_id.add(Dictionary.FIELD_VERSION, "$" + Dictionary.FIELD_VERSION);
-		_id.add(Dictionary.FIELD_HOST_TARGET_SID, "$" + Dictionary.FIELD_HOST_TARGET_SID);
-		// Group SUM
-		BasicDBObjectBuilder builder4group = BasicDBObjectBuilder.start();
-		builder4group.add("_id", _id.get());
-		builder4group.add(Dictionary.FIELD_RTT, new BasicDBObject("$sum", "$" + Dictionary.FIELD_RTT));
-		builder4group.add(Dictionary.FIELD_TOTAL, new BasicDBObject("$sum", "$" + Dictionary.FIELD_TOTAL));
-		builder4group.add(Dictionary.FIELD_TIMEOUT, new BasicDBObject("$sum", "$" + Dictionary.FIELD_TIMEOUT));
-		builder4group.add(Dictionary.FIELD_EXCEPTION, new BasicDBObject("$sum", "$" + Dictionary.FIELD_EXCEPTION));
-		DBObject group = BasicDBObjectBuilder.start("$group", builder4group.get()).get();
-		// Group Project
-		BasicDBObjectBuilder builder4project = BasicDBObjectBuilder.start();
-		builder4project.add(Dictionary.FIELD_SERVICE, "$_id." + Dictionary.FIELD_SERVICE);
-		builder4project.add(Dictionary.FIELD_VERSION, "$_id." + Dictionary.FIELD_VERSION);
-		builder4project.add(Dictionary.FIELD_HOST_TARGET_SID, "$_id." + Dictionary.FIELD_HOST_TARGET_SID);
-		builder4project.add(Dictionary.FIELD_METHOD, "$_id." + Dictionary.FIELD_METHOD);
-		builder4project.add(Dictionary.FIELD_RTT, "$" + Dictionary.FIELD_RTT);
-		builder4project.add(Dictionary.FIELD_TOTAL, "$" + Dictionary.FIELD_TOTAL);
-		builder4project.add(Dictionary.FIELD_TIMEOUT, "$" + Dictionary.FIELD_TIMEOUT);
-		builder4project.add(Dictionary.FIELD_EXCEPTION, "$" + Dictionary.FIELD_EXCEPTION);
-		DBObject project = BasicDBObjectBuilder.start("$project", builder4project.get()).get();
-		return new MongoMethods(offset, super.configs.get(period).collection().aggregate(condition, group, project));
+	public List<MethodInvoker> methods(String sid, String service, String versionAndCatalog, Period period, int offset, int length) {
+		DBObject condition = super.condition(sid, service, versionAndCatalog, period, offset, length);
+		return new MongoMethods(offset, super.configs.get(period).collection().aggregate(condition, MethodInvokerServiceImpl.GROUP_INSTANCE, MethodInvokerServiceImpl.PROJECT_INSTANCE));
+	}
+
+	@Override
+	public List<MethodInvoker> methods4group(String group, Period period, int offset, int length, SortBy sort) {
+		List<MethodInvoker> methods4Group = new ArrayList<>();
+		// 获取分组所有服务
+		for (ServiceAndVersion serviceAndVersion : new InstanceServices(this.instanceFinder.group(group))) {
+			List<MethodInvoker> methods4Service = this.methods4service(serviceAndVersion.getService(), serviceAndVersion.getVersionAndCatalog(), period, offset, length);
+			methods4Group.addAll(methods4Service);
+		}
+		// 内存排序
+		Collections.sort(methods4Group, sort.comparator());
+		return methods4Group;
 	}
 
 	private class MongoMethods extends ArrayList<MethodInvoker> {
@@ -100,6 +72,7 @@ public class MethodInvokerServiceImpl extends Statistics implements MethodInvoke
 		private static final long serialVersionUID = 1L;
 
 		private MongoMethods(int offset, AggregationOutput output) {
+			// 数据检查
 			if (output != null && output.results() != null) {
 				Iterator<DBObject> iterator = output.results().iterator();
 				while (iterator.hasNext()) {
@@ -107,24 +80,13 @@ public class MethodInvokerServiceImpl extends Statistics implements MethodInvoke
 					String service = MongoUtils.asString(object, Dictionary.FIELD_SERVICE);
 					String version = MongoUtils.asString(object, Dictionary.FIELD_VERSION);
 					String name = MongoUtils.asString(object, Dictionary.FIELD_METHOD);
-					long total = MongoUtils.asLong(object, Dictionary.FIELD_TOTAL) / (1 + offset);
-					long timeout = MongoUtils.asLong(object, Dictionary.FIELD_TIMEOUT) / (1 + offset);
-					long exception = MongoUtils.asLong(object, Dictionary.FIELD_EXCEPTION) / (1 + offset);
-					double rtt = total == 0 ? 0 : Double.valueOf(new DecimalFormat("#.00").format(MongoUtils.asDouble(object, Dictionary.FIELD_RTT, 0) / (1 + offset) / total));
+					long total = MongoUtils.asLong(object, Dictionary.FIELD_TOTAL);
+					long timeout = MongoUtils.asLong(object, Dictionary.FIELD_TIMEOUT);
+					long exception = MongoUtils.asLong(object, Dictionary.FIELD_EXCEPTION);
+					double rtt = total == 0 ? 0 : Double.valueOf(new DecimalFormat("#.00").format(MongoUtils.asDouble(object, Dictionary.FIELD_RTT, 0) / total));
 					super.add(new MethodInvoker(service, version, name, total, timeout, exception, rtt));
 				}
 			}
 		}
-	}
-
-	@Override
-	public List<MethodInvoker> methods4Group(String group, Period period, int offset, SortBy sortBy) {
-		List<MethodInvoker> methods4Group = new ArrayList<>();
-		for(ServiceAndVersion serviceAndVersion : new InstanceServices(this.instanceFinder.group(group))) {
-			List<MethodInvoker> methods4Service = this.methods4Service(serviceAndVersion.getService(), serviceAndVersion.getVersionAndCatalog(), period, offset);
-			methods4Group.addAll(methods4Service);
-		}
-		Collections.sort(methods4Group, sortBy.comparator());
-		return methods4Group;
 	}
 }

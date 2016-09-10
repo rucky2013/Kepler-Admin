@@ -2,7 +2,6 @@ package com.kepler.admin.mongo.impl;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.kepler.admin.mongo.MongoConfig;
@@ -130,7 +129,7 @@ public class MongoProxyConfig implements MongoConfig {
 			return MongoProxyConfig.this.collection.initializeOrderedBulkOperation();
 		}
 
-		public AggregationOutput aggregate(final DBObject... ops) {
+		public AggregationOutput aggregate(DBObject... ops) {
 			return MongoProxyConfig.this.collection.aggregate(Arrays.asList(ops));
 		}
 	}

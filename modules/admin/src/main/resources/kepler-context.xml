@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util" xsi:schemaLocation="http://www.springframework.org/schema/beans 
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 	http://www.springframework.org/schema/util
 	http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<alias name="kepler.admin.resource.status" alias="kepler.admin.finder.status" />
 	<alias name="kepler.admin.resource.config" alias="kepler.admin.finder.config" />
+	<alias name="kepler.admin.resource.terminal" alias="kepler.admin.finder.terminal" />
 	<alias name="kepler.admin.resource.instance" alias="kepler.admin.finder.instance" />
 	<alias name="kepler.admin.resource.dependency" alias="kepler.admin.finder.dependency" />
 
-	<bean id="kepler.admin.resource.config" class="com.kepler.admin.resource.config.impl.ConfigContextImpl" />
-
-	<bean id="kepler.admin.resource.instance" class="com.kepler.admin.resource.instance.impl.InstanceContextImpl" />
-
-	<bean id="kepler.admin.resource.status" class="com.kepler.admin.resource.status.impl.TerminalStatusContextImpl" />
-
 	<bean id="kepler.admin.resource.dependency" class="com.kepler.admin.resource.dependency.impl.DependencyContextImpl">
-		<constructor-arg ref="kepler.admin.finder.status" />
+		<constructor-arg ref="kepler.admin.finder.terminal" />
+		<constructor-arg ref="kepler.admin.finder.instance" />
 	</bean>
+
+	<bean id="kepler.admin.resource.terminal" class="com.kepler.admin.resource.terminal.impl.TerminalStatusContextImpl" />
 
 	<bean class="com.kepler.admin.resource.impl.Connector" init-method="init" destroy-method="destroy">
 		<constructor-arg ref="kepler.serials" />
 		<constructor-arg ref="kepler.admin.curator" />
 		<constructor-arg ref="kepler.admin.resource.config" />
-		<constructor-arg ref="kepler.admin.resource.status" />
+		<constructor-arg ref="kepler.admin.resource.terminal" />
 		<constructor-arg ref="kepler.admin.resource.instance" />
 		<constructor-arg ref="kepler.admin.resource.dependency" />
 	</bean>
+
+	<bean id="kepler.admin.resource.instance" class="com.kepler.admin.resource.instance.impl.InstanceContextImpl" />
+
+	<bean id="kepler.admin.resource.config" class="com.kepler.admin.resource.config.impl.ConfigContextImpl" />
 
 </beans>

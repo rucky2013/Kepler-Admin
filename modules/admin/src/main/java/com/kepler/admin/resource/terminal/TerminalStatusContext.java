@@ -1,4 +1,4 @@
-package com.kepler.admin.resource.status;
+package com.kepler.admin.resource.terminal;
 
 
 /**

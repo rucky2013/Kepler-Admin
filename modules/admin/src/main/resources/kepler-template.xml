@@ -5,7 +5,7 @@
     http://www.springframework.org/schema/util
 	http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<bean id="kepler.generic.history" class="com.kepler.admin.generic.impl.DefaultHistory">
+	<bean id="kepler.generic.template" class="com.kepler.admin.generic.impl.DefaultTemplate">
 		<constructor-arg ref="kepler.mongo.generic" />
 	</bean>
 

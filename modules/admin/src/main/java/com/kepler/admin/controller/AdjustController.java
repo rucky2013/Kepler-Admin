@@ -21,23 +21,23 @@ import com.kepler.admin.service.AdjustService;
 @RequestMapping(value = "/adjust")
 public class AdjustController {
 
-	private final AdjustService adjust;
-
 	/**
 	 * 搜索动态配置
 	 */
-	private final ConfigFinder finder4config;
+	private final ConfigFinder config;
+
+	private final AdjustService adjust;
 
 	/**
 	 * 搜索服务(实例)
 	 */
-	private final InstanceFinder finder4instance;
+	private final InstanceFinder instance;
 
-	public AdjustController(AdjustService adjust, ConfigFinder finder4config, InstanceFinder finder4instance) {
+	public AdjustController(AdjustService adjust, ConfigFinder config, InstanceFinder instance) {
 		super();
 		this.adjust = adjust;
-		this.finder4config = finder4config;
-		this.finder4instance = finder4instance;
+		this.config = config;
+		this.instance = instance;
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class AdjustController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	public Instance detail(String sid, String service, String versionAndCatalog) {
-		return this.finder4instance.sid(sid, service, versionAndCatalog);
+		return this.instance.sid(sid, service, versionAndCatalog);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class AdjustController {
 	 * @param sid
 	 * @param service
 	 * @param versionAndCatalog
-	 * @param priority
+	 * @param priority 调整的优先级
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/priority", method = RequestMethod.POST)
@@ -74,7 +74,7 @@ public class AdjustController {
 	 * @param sid
 	 * @param service
 	 * @param versionAndCatalog
-	 * @param tag
+	 * @param tag 调整的标签
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/tag", method = RequestMethod.POST)
@@ -88,7 +88,7 @@ public class AdjustController {
 	 * 
 	 * @param service
 	 * @param versionAndCatalog
-	 * @param priority
+	 * @param priority 调整的优先级
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/priorities", method = RequestMethod.POST)
@@ -102,7 +102,7 @@ public class AdjustController {
 	 * 
 	 * @param service
 	 * @param versionAndCatalog
-	 * @param tag
+	 * @param tag 调整的标签
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/tags", method = RequestMethod.POST)
@@ -120,13 +120,13 @@ public class AdjustController {
 	@RequestMapping(value = "/config", method = RequestMethod.GET)
 	@ResponseBody
 	public Config get(String sid) {
-		return this.finder4config.sid(sid);
+		return this.config.sid(sid);
 	}
 
 	/**
 	 * 指定动态参数
 	 * 
-	 * @param configs
+	 * @param configs 需要修改的动态参数
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/config", method = RequestMethod.POST)

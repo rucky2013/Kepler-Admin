@@ -9,7 +9,7 @@
 	//加载静态状态
 	jQuery.ajax({
 		type : "GET",
-		url : "/api/status/sid?sid=" + param("sid"),
+		url : "/api/terminal/sid?sid=" + param("sid"),
 		success : function callback(data) {
 			$("#status").empty();
 			for ( var key in data.status) {

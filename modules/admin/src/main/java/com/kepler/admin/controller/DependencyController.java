@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kepler.admin.domain.ServiceAndVersion;
 import com.kepler.admin.resource.dependency.DependencyApps;
+import com.kepler.admin.resource.dependency.DependencyCluster;
 import com.kepler.admin.resource.dependency.DependencyFinder;
 import com.kepler.admin.resource.dependency.DependencyInstance;
 
@@ -42,7 +43,7 @@ public class DependencyController {
 	}
 
 	/**
-	 * 依赖指定服务, 指定Group, 指定App的实例依赖
+	 * 依赖指定服务,并属于指定Group,App的实例集合
 	 * 
 	 * @param service
 	 * @param versionAndCatalog
@@ -52,19 +53,19 @@ public class DependencyController {
 	 */
 	@RequestMapping(value = "/exported/instances", method = RequestMethod.GET)
 	@ResponseBody
-	public Collection<DependencyInstance> exported(String service, String versionAndCatalog, String group, String application) {
-		return this.finder.exported(new ServiceAndVersion(service, versionAndCatalog), group, application);
+	public Collection<DependencyInstance> exported(String service, String versionAndCatalog, String group, String app) {
+		return this.finder.exported(new ServiceAndVersion(service, versionAndCatalog), group, app);
 	}
 
 	/**
-	 * 指定SID依赖的服务
+	 * 指定SID依赖的服务集群
 	 * 
 	 * @param sid
 	 * @return
 	 */
 	@RequestMapping(value = "/imported", method = RequestMethod.GET)
 	@ResponseBody
-	public Collection<ServiceAndVersion> imported(String sid) {
+	public Collection<DependencyCluster> imported(String sid) {
 		return this.finder.imported(sid);
 	}
 }

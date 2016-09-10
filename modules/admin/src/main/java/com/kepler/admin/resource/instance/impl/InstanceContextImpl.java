@@ -19,27 +19,27 @@ import com.kepler.org.apache.commons.lang.builder.HashCodeBuilder;
 public class InstanceContextImpl implements InstanceFinder, InstanceContext {
 
 	/**
-	 * Service + Version维度(集合)
+	 * Service + Version所对应的服务实例集合
 	 */
 	private final Map<ServiceAndVersion, List<Instance>> service4version = new HashMap<ServiceAndVersion, List<Instance>>();
 
 	/**
-	 * SID维度(集合)
+	 * SID所对应的服务实例集合
 	 */
 	private final Map<String, List<Instance>> sid4instances = new HashMap<String, List<Instance>>();
 
 	/**
-	 * 业务分组维度(集合)
+	 * 业务分组所对应的服务实例集合
 	 */
 	private final Map<String, List<Instance>> group = new HashMap<String, List<Instance>>();
 
 	/**
-	 * 标签维度(集合)
+	 * Tag所对应的服务实例集合
 	 */
 	private final Map<String, List<Instance>> tag = new HashMap<String, List<Instance>>();
 
 	/**
-	 * SID + Service/Version维度(实例)
+	 * SID = (SID + Service/Version维度)对应服务实例, 获取指定终端上的指定服务 
 	 */
 	private final Map<SID, Instance> sid4instance = new HashMap<SID, Instance>();
 
@@ -47,6 +47,8 @@ public class InstanceContextImpl implements InstanceFinder, InstanceContext {
 	 * ZK路径对应的服务实例
 	 */
 	private final Map<String, Instance> path = new HashMap<String, Instance>();
+
+	private final Object lock = new Object();
 
 	public Collection<ServiceAndVersion> service4versions() {
 		return this.service4version.keySet();
@@ -84,12 +86,26 @@ public class InstanceContextImpl implements InstanceFinder, InstanceContext {
 		return this.sid4instance.get(new SID(sid, service, versionAndCatalog));
 	}
 
+	/**
+	 * 工具方法
+	 * 
+	 * @param condition
+	 * @param key
+	 * @param instance
+	 */
 	private <T> void upsert(Map<T, List<Instance>> condition, T key, Instance instance) {
 		List<Instance> instances = condition.get(key);
 		condition.put(key, (instances = instances != null ? instances : new ArrayList<Instance>()));
 		instances.add(instance);
 	}
 
+	/**
+	 * 工具方法, 如果Map中指定List为空则进行删除(由调用方进行同步)
+	 * 
+	 * @param condition
+	 * @param key
+	 * @param instance
+	 */
 	private <T> void remove(Map<T, List<Instance>> condition, T key, Instance instance) {
 		List<Instance> instances = condition.get(key);
 		instances.remove(instance);
@@ -98,6 +114,12 @@ public class InstanceContextImpl implements InstanceFinder, InstanceContext {
 		}
 	}
 
+	/**
+	 * 从所有维度中删除服务实例
+	 * 
+	 * @param instance
+	 * @return
+	 */
 	private InstanceContextImpl remove(Instance instance) {
 		this.remove(this.service4version, instance.getService(), instance);
 		this.remove(this.sid4instances, instance.getSid(), instance);
@@ -109,23 +131,31 @@ public class InstanceContextImpl implements InstanceFinder, InstanceContext {
 	}
 
 	@Override
-	public synchronized InstanceContextImpl insert(Instance instance) {
-		this.upsert(this.service4version, instance.getService(), instance);
-		this.upsert(this.sid4instances, instance.getSid(), instance);
-		this.upsert(this.group, instance.getGroup(), instance);
-		this.upsert(this.tag, instance.getTag(), instance);
-		this.sid4instance.put(new SID(instance), instance);
-		this.path.put(instance.getPath(), instance);
+	// 维度Key不同, 强一致
+	public InstanceContextImpl insert(Instance instance) {
+		synchronized (this.lock) {
+			this.upsert(this.service4version, instance.getService(), instance);
+			this.upsert(this.sid4instances, instance.getSid(), instance);
+			this.upsert(this.group, instance.getGroup(), instance);
+			this.upsert(this.tag, instance.getTag(), instance);
+			this.sid4instance.put(new SID(instance), instance);
+			this.path.put(instance.getPath(), instance);
+
+		}
 		return this;
 	}
 
-	public synchronized InstanceContextImpl update(Instance instance) {
-		return this.remove(this.path.get(instance.getPath())).insert(instance);
+	public InstanceContextImpl update(Instance instance) {
+		synchronized (this.lock) {
+			return this.remove(this.path.get(instance.getPath())).insert(instance);
+		}
 	}
 
 	@Override
-	public synchronized InstanceContextImpl remove(String path) {
-		return this.remove(this.path.get(path));
+	public InstanceContextImpl remove(String path) {
+		synchronized (this.lock) {
+			return this.remove(this.path.get(path));
+		}
 	}
 
 	private class SID {

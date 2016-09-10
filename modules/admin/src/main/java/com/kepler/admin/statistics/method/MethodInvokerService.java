@@ -16,31 +16,34 @@ public interface MethodInvokerService {
 	 * @param sid
 	 * @param service
 	 * @param versionAndCatalog
-	 * @param period
-	 * @param offset
+	 * @param period 周期单位
+	 * @param offset 偏移
+	 * @param length 长度
 	 * @return
 	 */
-	public Collection<MethodInvoker> methods(String sid, String service, String versionAndCatalog, Period period, int offset);
+	public Collection<MethodInvoker> methods(String sid, String service, String versionAndCatalog, Period period, int offset, int length);
 
 	/**
 	 * Service + Version维度方法访问质量
 	 * 
 	 * @param service
 	 * @param versionAndCatalog
-	 * @param period
-	 * @param offset
+	 * @param period 周期单位
+	 * @param offset 偏移
+ 	 * @param length 长度
 	 * @return
 	 */
-	public Collection<MethodInvoker> methods4Service(String service, String versionAndCatalog, Period period, int offset);
-	
+	public Collection<MethodInvoker> methods4service(String service, String versionAndCatalog, Period period, int offset, int length);
+
 	/**
 	 * group 维度的方法访问质量
 	 * 
 	 * @param group
-	 * @param period
-	 * @param offset
-	 * @param sortBy
+	 * @param period 周期单位
+	 * @param offset 偏移
+	 * @param length 长度
+	 * @param sort 	 排序器
 	 * @return
 	 */
-	public List<MethodInvoker> methods4Group(String group, Period period, int offset, SortBy sortBy);
+	public List<MethodInvoker> methods4group(String group, Period period, int offset, int length, SortBy sort);
 }

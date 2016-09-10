@@ -4,7 +4,7 @@ import com.kepler.admin.domain.ServiceAndVersion;
 import com.kepler.service.ServiceInstance;
 
 /**
- * 存储节点基本信息
+ * 服务实例
  * 
  * @author kim 2015年12月16日
  */
@@ -32,12 +32,17 @@ public interface Instance {
 
 	public int getPriority();
 
-	public ServiceAndVersion getService();
-
 	/**
-	 * 服务节点(Not Get)
+	 * 服务节点
 	 * 
 	 * @return
 	 */
 	public ServiceInstance instance();
+	
+	/**
+	 * 承载服务
+	 * 
+	 * @return
+	 */
+	public ServiceAndVersion getService();
 }

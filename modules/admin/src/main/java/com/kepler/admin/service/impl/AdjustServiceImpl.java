@@ -36,6 +36,7 @@ public class AdjustServiceImpl implements AdjustService {
 	}
 
 	public void priority(String service, String versionAndCatalog, int priority) throws Exception {
+		// 获取指定服务 + 版本所有的服务实例并调整优先级
 		for (Instance instance : this.finder4instance.service4version(service, versionAndCatalog)) {
 			this.client.setData().withVersion(-1).forPath(instance.getPath(), this.serials.def4output().output(new ZkSerial(new Builder(instance.instance().host()).setPriority(priority).toServerHost(), instance.instance()), ServiceInstance.class));
 		}
@@ -48,6 +49,7 @@ public class AdjustServiceImpl implements AdjustService {
 	}
 
 	public void tag(String service, String versionAndCatalog, String tag) throws Exception {
+		// 获取指定服务 + 版本所有的服务实例并调整Tag
 		for (Instance instance : this.finder4instance.service4version(service, versionAndCatalog)) {
 			this.client.setData().withVersion(-1).forPath(instance.getPath(), this.serials.def4output().output(new ZkSerial(new Builder(instance.instance().host()).setTag(tag).toServerHost(), instance.instance()), ServiceInstance.class));
 		}
@@ -61,7 +63,7 @@ public class AdjustServiceImpl implements AdjustService {
 
 	@Override
 	public void config(String sid, Map<String, String> config) throws Exception {
-		Config cog = this.finder4config.sid(sid);
-		this.client.setData().withVersion(-1).forPath(cog.getPath(), this.serials.def4output().output(config, Map.class));
+		Config current = this.finder4config.sid(sid);
+		this.client.setData().withVersion(-1).forPath(current.getPath(), this.serials.def4output().output(config, Map.class));
 	}
 }

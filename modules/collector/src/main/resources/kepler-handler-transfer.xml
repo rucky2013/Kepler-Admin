@@ -5,23 +5,10 @@
     http://www.springframework.org/schema/util
 	http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<bean class="com.kepler.admin.collector.transfer.TransferHandler">
-		<constructor-arg>
-			<util:list>
-				<ref bean="kepler.transfer.dimension" />
-				<ref bean="kepler.transfer.dashboard" />
-			</util:list>
-		</constructor-arg>
-	</bean>
-
-	<bean id="kepler.transfer.dimension" class="com.kepler.admin.collector.transfer.DimensionHandler" init-method="init">
+	<bean class="com.kepler.admin.collector.transfer.TransferHandler" init-method="init">
 		<constructor-arg index="0" ref="kepler.mongo.config.transfer.minute" />
 		<constructor-arg index="1" ref="kepler.mongo.config.transfer.hour" />
 		<constructor-arg index="2" ref="kepler.mongo.config.transfer.day" />
-	</bean>
-
-	<bean id="kepler.transfer.dashboard" class="com.kepler.admin.collector.transfer.DashboardHandler" init-method="init">
-		<constructor-arg index="0" ref="kepler.mongo.config.transfer.dashboard" />
 	</bean>
 
 </beans>

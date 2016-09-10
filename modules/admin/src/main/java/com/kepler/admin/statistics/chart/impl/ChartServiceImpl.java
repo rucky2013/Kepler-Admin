@@ -19,6 +19,10 @@ import com.mongodb.DBObject;
  */
 public class ChartServiceImpl extends Statistics implements ChartService {
 
+	private static final DBObject PROJECT = Statistics.project(BasicDBObjectBuilder.start().add(Dictionary.FIELD_SERVICE, "$_id." + Dictionary.FIELD_SERVICE).add(Dictionary.FIELD_VERSION, "$_id." + Dictionary.FIELD_VERSION).add(Dictionary.FIELD_PERIOD, "$_id." + Dictionary.FIELD_PERIOD).get());
+
+	private static final DBObject GROUP = Statistics.group(BasicDBObjectBuilder.start().add(Dictionary.FIELD_SERVICE, "$" + Dictionary.FIELD_SERVICE).add(Dictionary.FIELD_VERSION, "$" + Dictionary.FIELD_VERSION).add(Dictionary.FIELD_PERIOD, "$" + Dictionary.FIELD_PERIOD).get());
+
 	private static final DBObject SORT = BasicDBObjectBuilder.start().add("$sort", BasicDBObjectBuilder.start(Dictionary.FIELD_PERIOD, 1).get()).get();
 
 	public ChartServiceImpl(MongoConfig transferDay, MongoConfig transferHour, MongoConfig transferMinute) {
@@ -26,54 +30,19 @@ public class ChartServiceImpl extends Statistics implements ChartService {
 		super.configs(transferDay, transferHour, transferMinute);
 	}
 
-	private DBObject group(Period period) {
-		BasicDBObjectBuilder _id = BasicDBObjectBuilder.start();
-		// 服务维度
-		_id.add(Dictionary.FIELD_SERVICE, "$" + Dictionary.FIELD_SERVICE);
-		_id.add(Dictionary.FIELD_VERSION, "$" + Dictionary.FIELD_VERSION);
-		// 周期维度
-		_id.add(Dictionary.FIELD_PERIOD, "$" + Dictionary.FIELD_PERIOD);
-		BasicDBObjectBuilder query = BasicDBObjectBuilder.start("_id", _id.get());
-		// 统计(Sum)
-		query.add(Dictionary.FIELD_RTT, BasicDBObjectBuilder.start("$sum", "$" + Dictionary.FIELD_RTT).get());
-		query.add(Dictionary.FIELD_TOTAL, BasicDBObjectBuilder.start("$sum", "$" + Dictionary.FIELD_TOTAL).get());
-		query.add(Dictionary.FIELD_TIMEOUT, BasicDBObjectBuilder.start("$sum", "$" + Dictionary.FIELD_TIMEOUT).get());
-		query.add(Dictionary.FIELD_EXCEPTION, BasicDBObjectBuilder.start("$sum", "$" + Dictionary.FIELD_EXCEPTION).get());
-		return BasicDBObjectBuilder.start().add("$group", query.get()).get();
-	}
-
-	private DBObject project(Period period) {
-		BasicDBObjectBuilder query = BasicDBObjectBuilder.start();
-		// 服务维度
-		query.add(Dictionary.FIELD_SERVICE, "$_id." + Dictionary.FIELD_SERVICE);
-		query.add(Dictionary.FIELD_VERSION, "$_id." + Dictionary.FIELD_VERSION);
-		// 周期维度
-		query.add(Dictionary.FIELD_PERIOD, "$_id." + Dictionary.FIELD_PERIOD);
-		// 统计值
-		query.add(Dictionary.FIELD_RTT, "$" + Dictionary.FIELD_RTT);
-		query.add(Dictionary.FIELD_TOTAL, "$" + Dictionary.FIELD_TOTAL);
-		query.add(Dictionary.FIELD_TIMEOUT, "$" + Dictionary.FIELD_TIMEOUT);
-		query.add(Dictionary.FIELD_EXCEPTION, "$" + Dictionary.FIELD_EXCEPTION).get();
-		return BasicDBObjectBuilder.start().add("$project", query.get()).get();
-	}
-
 	@Override
-	public ChartDataset service(String service, String versionAndCatalog, Period period, int offset) {
-		DBObject match = super.condition(service, versionAndCatalog, period, offset);
-		DBObject group = this.group(period);
-		DBObject project = this.project(period);
+	public ChartDataset service(String service, String versionAndCatalog, Period period, int offset, int length) {
+		DBObject match = super.condition(service, versionAndCatalog, period, offset, length);
 		// 聚合数据
-		AggregationOutput aggregate = super.configs.get(period).collection().aggregate(match, group, project, ChartServiceImpl.SORT);
+		AggregationOutput aggregate = super.configs.get(period).collection().aggregate(match, ChartServiceImpl.GROUP, ChartServiceImpl.PROJECT, ChartServiceImpl.SORT);
 		return new MongoDataset(service + "-" + versionAndCatalog, period, aggregate);
 	}
 
 	@Override
-	public ChartDataset instance(String sid, String service, String versionAndCatalog, Period period, int offset) {
-		DBObject match = super.condition(sid, service, versionAndCatalog, period, offset);
-		DBObject group = this.group(period);
-		DBObject project = this.project(period);
+	public ChartDataset instance(String sid, String service, String versionAndCatalog, Period period, int offset, int length) {
+		DBObject match = super.condition(sid, service, versionAndCatalog, period, offset, length);
 		// 聚合数据
-		AggregationOutput aggregate = super.configs.get(period).collection().aggregate(match, group, project, ChartServiceImpl.SORT);
+		AggregationOutput aggregate = super.configs.get(period).collection().aggregate(match, ChartServiceImpl.GROUP, ChartServiceImpl.PROJECT, ChartServiceImpl.SORT);
 		return new MongoDataset(service + "-" + versionAndCatalog, period, aggregate);
 	}
 
@@ -81,11 +50,12 @@ public class ChartServiceImpl extends Statistics implements ChartService {
 
 		private MongoDataset(String title, Period period, AggregationOutput output) {
 			super(title);
+			// 检查数据
 			if (output != null && output.results() != null) {
 				Iterator<DBObject> iterator = output.results().iterator();
 				while (iterator.hasNext()) {
 					DBObject object = iterator.next();
-					// 毫秒转换为周期时间
+					// 周期转换为相关单位值
 					long time = period.convert(MongoUtils.asLong(object, Dictionary.FIELD_PERIOD));
 					// 访问总量
 					long total = MongoUtils.asLong(object, Dictionary.FIELD_TOTAL);

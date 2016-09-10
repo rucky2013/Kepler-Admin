@@ -22,7 +22,17 @@ public interface GenericRequest {
 	
 	public String getCatalog();
 	
+	/**
+	 * 实际参数
+	 * 
+	 * @return
+	 */
 	public Object[] getDatas();
 
+	/**
+	 * 实际参数类型
+	 * 
+	 * @return
+	 */
 	public String[] getClasses();
 }

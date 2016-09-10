@@ -52,13 +52,13 @@ public class InstanceImpl implements Instance {
 		return this.instance.host().priority();
 	}
 
-	public ServiceAndVersion getService() {
-		return this.service;
-	}
-
 	@Override
 	public ServiceInstance instance() {
 		return this.instance;
+	}
+
+	public ServiceAndVersion getService() {
+		return this.service;
 	}
 
 	public String toString() {

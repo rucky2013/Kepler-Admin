@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * 排序Map
+ * 排序Map, 包装Map为TreeMap并Trim key
  * 
  * @author kim
  *

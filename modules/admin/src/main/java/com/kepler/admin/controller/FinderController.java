@@ -27,6 +27,12 @@ public class FinderController {
 		this.finder = finder;
 	}
 
+	/**
+	 * 排序
+	 * 
+	 * @param values
+	 * @return
+	 */
 	private Collection<String> sort(Collection<String> values) {
 		TreeSet<String> sort = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 		sort.addAll(values);
@@ -34,7 +40,8 @@ public class FinderController {
 	}
 
 	/**
-	 * 服务标签集合
+	 * 获取服务标签集合
+	 * 
 	 * @return
 	 */
 	@RequestMapping(value = "/tags", method = RequestMethod.GET)
@@ -44,7 +51,8 @@ public class FinderController {
 	}
 
 	/**
-	 * 服务分组集合
+	 * 获取服务分组集合
+	 * 
 	 * @return
 	 */
 	@RequestMapping(value = "/groups", method = RequestMethod.GET)
@@ -54,7 +62,7 @@ public class FinderController {
 	}
 
 	/**
-	 * 服务实例(SID + Service + Version)
+	 * 获取服务实例(SID + Service + Version)
 	 * 
 	 * @param sid
 	 * @param service
@@ -68,7 +76,7 @@ public class FinderController {
 	}
 
 	/**
-	 * 服务实例集合(Tag)
+	 * 获取指定Tag的服务实例集合(Instance = Service + SID)
 	 * 
 	 * @param tag
 	 * @return
@@ -79,6 +87,12 @@ public class FinderController {
 		return this.finder.tag(tag);
 	}
 
+	/**
+	 * 获取指定SID的服务实例集合(Instance = Service + SID)
+	 * 
+	 * @param sid
+	 * @return
+	 */
 	@RequestMapping(value = "/instances/sid", method = RequestMethod.GET)
 	@ResponseBody
 	public Collection<Instance> instance4sid(String sid) {
@@ -86,7 +100,7 @@ public class FinderController {
 	}
 
 	/**
-	 * 服务实例集合(Group)
+	 * 获取指定业务分组的服务实例集合(Instance = Service + SID)
 	 * 
 	 * @param group
 	 * @return
@@ -98,7 +112,7 @@ public class FinderController {
 	}
 
 	/**
-	 * 服务实例集合(ServiceAndVersion)
+	 * 获取指定服务名称和服务版本的服务实例集合(Instance = Service + SID)
 	 * 
 	 * @param service
 	 * @param versionAndCatalog
@@ -111,7 +125,7 @@ public class FinderController {
 	}
 
 	/**
-	 * 服务集合(Tag)
+	 * 获取指定Tag的服务集合
 	 * 
 	 * @param tag
 	 * @return
@@ -123,7 +137,7 @@ public class FinderController {
 	}
 
 	/**
-	 * 服务集合(Group)
+	 * 获取指定业务分组的服务集合
 	 * 
 	 * @param group
 	 * @return
@@ -135,7 +149,7 @@ public class FinderController {
 	}
 
 	/**
-	 * 服务集合(Service / Version)
+	 * 获取指定服务名称及版本的服务集合
 	 * 
 	 * @param service
 	 * @param versionAndCatalog

@@ -5,33 +5,28 @@ import java.util.Collection;
 import com.kepler.admin.domain.ServiceAndVersion;
 
 /**
+ * 服务实例上下文(不含客户端)
+ * 
  * @author kim 2015年12月16日
  */
 public interface InstanceFinder {
 
 	/**
-	 * 服务标签集合
+	 * Tag集合(不含客户端)
 	 * 
 	 * @return
 	 */
 	public Collection<String> tags();
 
 	/**
-	 * 服务业务分组集合
+	 * 业务分组集合
 	 * 
 	 * @return
 	 */
 	public Collection<String> groups();
 
 	/**
-	 * 服务Service + 版本集合
-	 * 
-	 * @return
-	 */
-	public Collection<ServiceAndVersion> service4versions();
-
-	/**
-	 * 获取SID对应的服务集合
+	 * 获取SID对应的服务实例集合(单主机可能会发布多个服务)
 	 * 
 	 * @param sid
 	 * @return
@@ -39,7 +34,7 @@ public interface InstanceFinder {
 	public Collection<Instance> sid(String sid);
 
 	/**
-	 * 获取Tag对应的服务集合
+	 * 获取Tag对应的服务实例集合
 	 * 
 	 * @param tag
 	 * @return
@@ -55,14 +50,14 @@ public interface InstanceFinder {
 	public Collection<Instance> group(String group);
 
 	/**
-	 * 获取Service + 版本服务集合
+	 * 获取指定服务 + 版本服务实例集合
 	 * 
 	 * @param service
 	 * @param versionAndCatalog
 	 * @return
 	 */
 	public Collection<Instance> service4version(String service, String versionAndCatalog);
-
+	
 	/**
 	 * ZK路径对应的服务实例
 	 * 
@@ -72,7 +67,7 @@ public interface InstanceFinder {
 	public Instance path(String path);
 
 	/**
-	 * 获取SID绑定Host, Host发布多个Service
+	 * 获取指定SID + Service + Version的服务实例(单主机可能会发布多个服务)
 	 * 
 	 * @param sid
 	 * @param service
@@ -80,4 +75,11 @@ public interface InstanceFinder {
 	 * @return
 	 */
 	public Instance sid(String sid, String service, String versionAndCatalog);
+	
+	/**
+	 * 服务 + 版本集合
+	 * 
+	 * @return
+	 */
+	public Collection<ServiceAndVersion> service4versions();
 }

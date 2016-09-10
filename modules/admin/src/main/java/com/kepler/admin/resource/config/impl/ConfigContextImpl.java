@@ -23,8 +23,8 @@ public class ConfigContextImpl implements ConfigFinder, ConfigContext {
 	private final Map<String, Config> sid = new HashMap<String, Config>();
 
 	private ConfigContextImpl remove(Config config) {
-		this.sid.remove(config.getSid());
 		this.path.remove(config.getPath());
+		this.sid.remove(config.getSid());
 		return this;
 	}
 
@@ -34,19 +34,26 @@ public class ConfigContextImpl implements ConfigFinder, ConfigContext {
 	}
 
 	@Override
-	public synchronized ConfigContextImpl remove(String path) {
-		return this.remove(this.path.get(path));
+	public ConfigContextImpl remove(String path) {
+		synchronized (path.intern()) {
+			return this.remove(this.path.get(path));
+		}
 	}
 
 	@Override
-	public synchronized ConfigContextImpl insert(Config config) {
-		this.sid.put(config.getSid(), config);
-		this.path.put(config.getPath(), config);
+	public ConfigContextImpl insert(Config config) {
+		synchronized (config.getPath().intern()) {
+			this.path.put(config.getPath(), config);
+			this.sid.put(config.getSid(), config);
+		}
 		return this;
 	}
 
 	@Override
-	public synchronized ConfigContextImpl update(Config config) {
-		return this.remove(this.path.get(config.getPath())).insert(config);
+	public ConfigContextImpl update(Config config) {
+		synchronized (config.getPath().intern()) {
+			// Insert after Delete
+			return this.remove(this.path.get(config.getPath())).insert(config);
+		}
 	}
 }

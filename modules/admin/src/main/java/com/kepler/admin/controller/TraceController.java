@@ -1,7 +1,6 @@
 package com.kepler.admin.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,28 +16,16 @@ import com.kepler.admin.traces.TraceService;
 @RequestMapping(value = "/traces")
 public class TraceController {
 
-	private TraceService traceService;
+	private final TraceService trace;
 
-	public TraceController(TraceService traceService) {
+	public TraceController(TraceService trace) {
 		super();
-		this.traceService = traceService;
+		this.trace = trace;
 	}
 
-	/**
-	 * SID + Service + Version对应服务实例每个方法在指定周期内的统计
-	 * @param sid
-	 * @param service
-	 * @param versionAndCatalog
-	 * @param period
-	 * @param offset
-	 * @return
-	 */
-	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Map> methods(String traceId) {
-		return traceService.getTrace(traceId);
+	public List<?> methods(String traceId) {
+		return trace.trace(traceId);
 	}
-
-
 }

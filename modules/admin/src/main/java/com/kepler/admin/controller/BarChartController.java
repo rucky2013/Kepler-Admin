@@ -12,23 +12,33 @@ import com.kepler.admin.statistics.barchart.BarChartData;
 import com.kepler.admin.statistics.barchart.BarChatService;
 
 /**
- * @author longyaokun
- * @date 2016年3月21日
+ * 水桶图
+ * 
+ * @author longyaokun 2016年3月21日
  *
  */
 @Controller
 @RequestMapping(value = "/barchart")
 public class BarChartController {
 
-	private final BarChatService barChatService;
+	private final BarChatService barChat;
 
-	public BarChartController(BarChatService barChatService) {
-		this.barChatService = barChatService;
+	public BarChartController(BarChatService barChat) {
+		this.barChat = barChat;
 	}
-	
-	@RequestMapping(value = "/statistics4Clients", method = RequestMethod.GET)
+
+	/**
+	 * @param service 
+	 * @param versionAndCatalog
+	 * @param method
+	 * @param period 周期单位
+	 * @param offset 偏移
+	 * @param length 长度
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	public List<BarChartData> statistics4Clients(String service, String versionAndCatalog, String method, Period period){
-		return this.barChatService.statistics4Clients(service, versionAndCatalog, method, period, period.equals(Period.MINUTE) ? period.period() - 1 : period.period());
+	public List<BarChartData> statistics4clients(String service, String versionAndCatalog, String method, Period period, int offset, int length) {
+		return this.barChat.statistics(service, versionAndCatalog, method, period, offset, length);
 	}
 }

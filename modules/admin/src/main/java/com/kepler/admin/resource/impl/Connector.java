@@ -15,8 +15,8 @@ import com.kepler.admin.resource.dependency.DependencyContext;
 import com.kepler.admin.resource.dependency.impl.DependencyServiceImpl;
 import com.kepler.admin.resource.instance.InstanceContext;
 import com.kepler.admin.resource.instance.impl.InstanceImpl;
-import com.kepler.admin.resource.status.TerminalStatusContext;
-import com.kepler.admin.resource.status.impl.TerminalStatusImpl;
+import com.kepler.admin.resource.terminal.TerminalStatusContext;
+import com.kepler.admin.resource.terminal.impl.TerminalStatusImpl;
 import com.kepler.host.HostStatus;
 import com.kepler.serial.Serials;
 import com.kepler.service.imported.ImportedService;
@@ -115,6 +115,12 @@ public class Connector {
 		this.cache4status.close();
 	}
 
+	/**
+	 * 用于监听Status
+	 * 
+	 * @author KimShen
+	 *
+	 */
 	private class StatusListener implements TreeCacheListener {
 
 		public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception {
@@ -141,6 +147,12 @@ public class Connector {
 		}
 	}
 
+	/**
+	 * 用于监听Config
+	 * 
+	 * @author KimShen
+	 *
+	 */
 	private class ConfigListener implements TreeCacheListener {
 
 		@SuppressWarnings("unchecked")
@@ -168,6 +180,12 @@ public class Connector {
 		}
 	}
 
+	/**
+	 * 用于监听服务实例
+	 * 
+	 * @author KimShen
+	 *
+	 */
 	private class InstanceListener implements TreeCacheListener {
 
 		public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception {
@@ -194,6 +212,12 @@ public class Connector {
 		}
 	}
 
+	/**
+	 * 用于监听服务依赖
+	 * 
+	 * @author KimShen
+	 *
+	 */
 	private class DependencyListener implements TreeCacheListener {
 
 		public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception {

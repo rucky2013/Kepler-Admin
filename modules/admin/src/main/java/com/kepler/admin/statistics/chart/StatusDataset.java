@@ -53,6 +53,7 @@ public class StatusDataset {
 	}
 
 	public StatusDataset gc(Object[] data, String title) {
+		// 获取对应GC数据并追加
 		ChartLine chart = this.gc.get(title);
 		chart = chart != null ? chart : ChartLine.def(title);
 		chart.add(data);

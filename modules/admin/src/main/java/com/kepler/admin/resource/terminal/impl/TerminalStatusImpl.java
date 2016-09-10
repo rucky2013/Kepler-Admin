@@ -1,9 +1,9 @@
-package com.kepler.admin.resource.status.impl;
+package com.kepler.admin.resource.terminal.impl;
 
 import java.util.Map;
 
 import com.kepler.admin.resource.OrderedMap;
-import com.kepler.admin.resource.status.TerminalStatus;
+import com.kepler.admin.resource.terminal.TerminalStatus;
 import com.kepler.host.Host;
 import com.kepler.host.HostStatus;
 import com.kepler.org.apache.commons.lang.StringUtils;
@@ -57,5 +57,4 @@ public class TerminalStatusImpl implements TerminalStatus {
 	public Map<String, Object> getStatus() {
 		return this.data;
 	}
-
 }

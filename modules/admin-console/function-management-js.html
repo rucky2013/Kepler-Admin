@@ -53,7 +53,7 @@
 		//展示详情按钮
 		if($("#finder_groups").val() != "") {
 			$("#groups").empty();
-			$("#groups").append("<button id=\"group\"  data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-search\"></button>");
+			$("#groups").append("<button id=\"group\" data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-search\"></button>");
 			$("#group").click(function(){
 				window.open("/?function=function-group&group=" + $("#finder_groups").val());
 			});

@@ -34,14 +34,14 @@ public class ChartController {
 	 * 
 	 * @param service
 	 * @param versionAndCatalog
-	 * @param period
-	 * @param offset
+	 * @param period 周期单位
+	 * @param offset 偏移
 	 * @return
 	 */
 	@RequestMapping(value = "/service", method = RequestMethod.GET)
 	@ResponseBody
-	public ChartDataset service(String service, String versionAndCatalog, Period period, int offset) {
-		return this.chart.service(service, versionAndCatalog, period, offset);
+	public ChartDataset service(String service, String versionAndCatalog, Period period, int offset, int length) {
+		return this.chart.service(service, versionAndCatalog, period, offset, length);
 	}
 
 	/**
@@ -50,26 +50,29 @@ public class ChartController {
 	 * @param sid
 	 * @param service
 	 * @param versionAndCatalog
-	 * @param period
-	 * @param offset
+	 * @param period 周期单位
+	 * @param offset 偏移
+	 * @param length 长度
 	 * @return
 	 */
 	@RequestMapping(value = "/instance", method = RequestMethod.GET)
 	@ResponseBody
-	public ChartDataset instance(String sid, String service, String versionAndCatalog, Period period, int offset) {
-		return this.chart.instance(sid, service, versionAndCatalog, period, offset);
+	public ChartDataset instance(String sid, String service, String versionAndCatalog, Period period, int offset, int length) {
+		return this.chart.instance(sid, service, versionAndCatalog, period, offset, length);
 	}
 
 	/**
 	 * 主机状态维度图表
 	 * 
 	 * @param sid
-	 * @param offset
+	 * @param period 周期单位
+	 * @param offset 偏移
+	 * @param length 长度
 	 * @return
 	 */
 	@RequestMapping(value = "/status", method = RequestMethod.GET)
 	@ResponseBody
-	public StatusDataset status(String sid, int offset) {
+	public StatusDataset status(String sid, Period period, int offset, int length) {
 		return this.status.status(sid, offset);
 	}
 }

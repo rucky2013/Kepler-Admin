@@ -33,5 +33,4 @@ public class ConfigImpl implements Config {
 	public Map<String, Object> getConfig() {
 		return this.config;
 	}
-	
 }

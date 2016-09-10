@@ -1,6 +1,6 @@
 <script src="/assets/js/jquery-ui.js"></script>
 <script>
-	$("#navigation").html("动态参数");
+	$("#navigation").html("参数配置");
 	$("#host").html(param("host"));
 	//模板
 	var template = "<tr><td class=\"\">#{key}</td><td id=\"td_#{id}\"><span><input id=\"input_#{id}\" name=\"#{key}\" type=\"text\" class=\"form-control\" value=\"#{value}\"></span></td></tr>";
@@ -88,6 +88,7 @@
 		loadingConfig();
 		loadingServices();
 	}
+	
 	$(document).ready(function() {
 		loading();
 	});

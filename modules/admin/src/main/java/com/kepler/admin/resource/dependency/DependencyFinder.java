@@ -14,7 +14,17 @@ import com.kepler.admin.domain.ServiceAndVersion;
 public interface DependencyFinder {
 
 	/**
-	 * 获取指定服务被依赖
+	 * 获取依赖指定服务, 并属于指定Group/App的实例
+	 * 
+	 * @param service
+	 * @param group
+	 * @param app
+	 * @return
+	 */
+	public Collection<DependencyInstance> exported(ServiceAndVersion service, String group, String app);
+
+	/**
+	 * 获取依赖指定服务的列表
 	 * 
 	 * @param service
 	 * @return
@@ -22,20 +32,10 @@ public interface DependencyFinder {
 	public Collection<DependencyApps> exported(ServiceAndVersion service);
 
 	/**
-	 * 获取依赖指定服务, 指定Group, 指定App的实例依赖
-	 * 
-	 * @param service
-	 * @param group
-	 * @param application
-	 * @return
-	 */
-	public Collection<DependencyInstance> exported(ServiceAndVersion service, String group, String application);
-
-	/**
-	 * 获取指定SID的依赖
+	 * 获取指定SID的依赖集群
 	 * 
 	 * @param sid
 	 * @return
 	 */
-	public Collection<ServiceAndVersion> imported(String sid);
+	public Collection<DependencyCluster> imported(String sid);
 }

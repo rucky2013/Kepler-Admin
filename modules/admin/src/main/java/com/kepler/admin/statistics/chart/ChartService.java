@@ -14,9 +14,10 @@ public interface ChartService {
 	 * @param versionAndCatalog
 	 * @param period
 	 * @param offset
+	 * @param length
 	 * @return
 	 */
-	public ChartDataset service(String service, String versionAndCatalog, Period period, int offset);
+	public ChartDataset service(String service, String versionAndCatalog, Period period, int offset, int length);
 
 	/**
 	 * SID + Service + Version图表
@@ -26,7 +27,8 @@ public interface ChartService {
 	 * @param versionAndCatalog
 	 * @param period
 	 * @param offset
+ 	 * @param length
 	 * @return
 	 */
-	public ChartDataset instance(String sid, String service, String versionAndCatalog, Period period, int offset);
+	public ChartDataset instance(String sid, String service, String versionAndCatalog, Period period, int offset, int length);
 }

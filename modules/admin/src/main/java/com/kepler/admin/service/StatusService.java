@@ -8,7 +8,7 @@ import java.util.Map;
 public interface StatusService {
 
 	/**
-	 * 静态状态
+	 * 终端状态
 	 * 
 	 * @param sid
 	 * @return

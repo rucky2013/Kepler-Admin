@@ -4,29 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author longyaokun
- * @date 2016年3月21日
+ * 水桶图数据结构
+ * 
+ * @author longyaokun 2016年3月21日
  *
  */
 public class BarChartData {
 
-	private List<String> categories = new ArrayList<String>();
+	private final List<String> categories = new ArrayList<String>();
 
-	private List<Series> series = new ArrayList<Series>();
+	private final List<BarChartSeries> barChartSeries = new ArrayList<BarChartSeries>();
 
 	public List<String> getCategories() {
 		return this.categories;
 	}
 
-	public List<Series> getSeries() {
-		return this.series;
+	public List<BarChartSeries> getSeries() {
+		return this.barChartSeries;
 	}
-	
-	public void addCategory(String category){
+
+	public void addCategory(String category) {
 		this.categories.add(category);
 	}
 
-	public void addSeries(Series series){
-		this.series.add(series);
+	public void addSeries(BarChartSeries barChartSeries) {
+		this.barChartSeries.add(barChartSeries);
 	}
 }

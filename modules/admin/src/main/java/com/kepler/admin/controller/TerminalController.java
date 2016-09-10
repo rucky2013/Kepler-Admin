@@ -7,25 +7,39 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kepler.admin.resource.status.TerminalStatus;
-import com.kepler.admin.resource.status.TerminalStatusFinder;
+import com.kepler.admin.resource.terminal.TerminalStatus;
+import com.kepler.admin.resource.terminal.TerminalStatusFinder;
 
 /**
- * @author kim 2016年1月2日
+ * 实例查询
+ * 
+ * @author KimShen
+ *
  */
 @Controller
-@RequestMapping(value = "/status")
-public class StatusController {
+@RequestMapping(value = "/terminal")
+public class TerminalController {
 
 	private final TerminalStatusFinder finder;
 
-	public StatusController(TerminalStatusFinder finder) {
+	public TerminalController(TerminalStatusFinder finder) {
 		super();
 		this.finder = finder;
 	}
-	
+
 	/**
-	 * Group对应主机状态集合(含客户端)
+	 * 所有终端的业务分组集合(包含客户端)
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "/groups", method = RequestMethod.GET)
+	@ResponseBody
+	public Collection<String> groups() {
+		return this.finder.groups();
+	}
+
+	/**
+	 * 业务分组对应主机状态集合
 	 * 
 	 * @param group
 	 * @return
@@ -34,18 +48,6 @@ public class StatusController {
 	@ResponseBody
 	public Collection<TerminalStatus> group(String group) {
 		return this.finder.group(group);
-	}
-
-	/**
-	 * Group集合(含服务及客户端)
-	 * 
-	 * @param group
-	 * @return
-	 */
-	@RequestMapping(value = "/groups", method = RequestMethod.GET)
-	@ResponseBody
-	public Collection<String> groups() {
-		return this.finder.groups();
 	}
 
 	/**

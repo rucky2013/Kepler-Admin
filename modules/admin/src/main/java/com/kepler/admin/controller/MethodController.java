@@ -37,8 +37,8 @@ public class MethodController {
 	 */
 	@RequestMapping(value = "/methods/instance", method = RequestMethod.GET)
 	@ResponseBody
-	public Collection<MethodInvoker> methods(String sid, String service, String versionAndCatalog, Period period, int offset) {
-		return this.methods.methods(sid, service, versionAndCatalog, period, offset);
+	public Collection<MethodInvoker> methods(String sid, String service, String versionAndCatalog, Period period, int offset, int length) {
+		return this.methods.methods(sid, service, versionAndCatalog, period, offset, length);
 	}
 
 	/**
@@ -52,12 +52,12 @@ public class MethodController {
 	 */
 	@RequestMapping(value = "/methods/service", method = RequestMethod.GET)
 	@ResponseBody
-	public Collection<MethodInvoker> methods4Service(String service, String versionAndCatalog, Period period, int offset) {
-		return this.methods.methods4Service(service, versionAndCatalog, period, offset);
+	public Collection<MethodInvoker> methods4Service(String service, String versionAndCatalog, Period period, int offset, int length) {
+		return this.methods.methods4service(service, versionAndCatalog, period, offset, length);
 	}
-	
+
 	/**
-	 * group里每个方法在指定周期内的统计
+	 * 业务分组中每个方法在指定周期内的统计(聚合)
 	 * 
 	 * @param group
 	 * @param period
@@ -67,7 +67,7 @@ public class MethodController {
 	 */
 	@RequestMapping(value = "/methods/group", method = RequestMethod.GET)
 	@ResponseBody
-	public List<MethodInvoker> methods4Group(String group, Period period, int offset, SortBy sortBy) {
-		return this.methods.methods4Group(group, period, offset, sortBy);
+	public List<MethodInvoker> methods4Group(String group, Period period, int offset, int length, SortBy sortBy) {
+		return this.methods.methods4group(group, period, offset, length, sortBy);
 	}
 }

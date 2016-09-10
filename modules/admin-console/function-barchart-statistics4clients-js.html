@@ -10,7 +10,7 @@
 	function loadClients() {
 		jQuery.ajax({
 			type : "GET",
-			url : "/api/barchart/statistics4Clients?service=" + param("service") + "&versionAndCatalog=" + param("versionAndCatalog") + "&method=" + param("method") + "&period=" + param("period"),
+			url : "/api/barchart?service=" + param("service") + "&versionAndCatalog=" + param("versionAndCatalog") + "&method=" + param("method") + "&period=" + param("period") + "&offset=" + param("offset") + "&length=" + param("length"),
 			success : function callback(data) {
 				var total = build("客户端调用量", data[0].categories, data[0].series, "total", "");
 				var error = build("客户端错误量", data[1].categories, data[1].series, "error", "");
@@ -27,7 +27,14 @@
 			$("#" + canvas[index]).highcharts(element);
 		});
 	}
+	
 	window.onload = function() {
+		$("#info_service").html(param("service"));
+		$("#info_version").html(param("versionAndCatalog"));
+		$("#info_method").html(param("method"));
+		$("#info_period").html(param("period"));
+		$("#info_offset").html(param("offset"));
+		$("#info_length").html(param("length"));
 		loadClients();
 	}
 </script>

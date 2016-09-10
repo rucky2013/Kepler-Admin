@@ -6,7 +6,7 @@ import com.kepler.admin.domain.Period;
 import com.kepler.admin.mongo.Dictionary;
 import com.kepler.admin.mongo.MongoConfig;
 import com.kepler.admin.mongo.impl.MongoUtils;
-import com.kepler.admin.resource.status.TerminalStatusFinder;
+import com.kepler.admin.resource.terminal.TerminalStatusFinder;
 import com.kepler.admin.statistics.chart.StatusDataset;
 import com.kepler.admin.statistics.chart.StatusService;
 import com.mongodb.BasicDBObjectBuilder;
@@ -21,9 +21,9 @@ public class StatusServiceImpl implements StatusService {
 
 	private static final DBObject SORT = BasicDBObjectBuilder.start(Dictionary.FIELD_PERIOD, 1).get();
 
-	private final MongoConfig status;
-
 	private final TerminalStatusFinder finder;
+	
+	private final MongoConfig status;
 
 	public StatusServiceImpl(MongoConfig status, TerminalStatusFinder finder) {
 		this.status = status;

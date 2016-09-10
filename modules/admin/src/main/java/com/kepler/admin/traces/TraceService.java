@@ -1,11 +1,12 @@
 package com.kepler.admin.traces;
 
 import java.util.List;
-import java.util.Map;
 
+/**
+ * @author zhangjiehao
+ *
+ */
 public interface TraceService {
 
-	@SuppressWarnings("rawtypes")
-	List<Map> getTrace(String traceId);
-	
+	public List<?> trace(String traceId);
 }
