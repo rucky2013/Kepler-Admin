@@ -35,6 +35,10 @@
 						<!--# include file="content-search.html" -->
 					</div>
 					<div class="page-content">
+						<!--# if expr="$arg_function" -->
+						<!--# else -->
+							<!--# set var="arg_function" value="function-index" -->
+						<!--# endif -->
 						<!--# include file="$arg_function.html" -->
 					</div>
 				</div>
@@ -54,6 +58,10 @@
 			    var r = window.location.search.substr(1).match(reg);  
 			    if (r != null) return unescape(r[2]); return null; 
 			}
+			
+			$("#home").click(function (){
+				window.location.href = "/";
+			});
 		</script>
 		<!--# include file="$arg_function-js.html" -->
 	</body>
