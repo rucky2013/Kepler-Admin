@@ -91,7 +91,7 @@ public class StatusServiceImpl implements StatusService {
 		 * @param current
 		 */
 		private void add(String key, String method, DBObject current) {
-			this.add(key, method, current, 0);
+			this.add(key, method, current, 1);
 		}
 
 		/**
