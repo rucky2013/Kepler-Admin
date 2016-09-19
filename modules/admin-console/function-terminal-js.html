@@ -18,7 +18,7 @@
 		});
 	}
 
-	function loading(data, element) {
+	function loadings(data, element) {
 		$("#service-tab_tbody").empty();
 		$(data).each(function(index, each){
 			//加载服务项
@@ -39,14 +39,46 @@
 		});
 	}
 	
+	function loading(data, element) {
+		$("#service-tab_tbody").empty();
+		//加载服务项
+		$("#service-tab_tbody").append(template.replace("#{host}", data.host).replaceAll("#{path}", data.path).replaceAll("#{sid}", data.sid));
+		//绑定图表,依赖按钮等
+		$("#chart_" + data.sid).click(function() {
+			window.open("/?function=function-chart-status&sid=" + data.sid, "_blank");
+		});
+		$("#dependency_" + data.sid).click(function() {
+			window.open("/?function=function-dependency-imported&sid=" + data.sid, "_blank");
+		});
+		$("#status_" + data.sid).click(function() {
+			window.open("/?function=function-status&sid=" + data.sid + "&host=" + data.host, "_blank");
+		});
+		$("#config_" + data.sid).click(function() {
+			window.open("/?function=function-config&sid=" + data.sid + "&host=" + data.host, "_blank");
+		});
+	}
+	
 	//Group变化
 	$("#finder_groups").change(function() {
-		$("#finder_tags").val("");
+		$("#finder_sid").val("");
+		$("#finder_sid").attr("placeholder", "SID");
 		jQuery.ajax({
 			type : "GET",
 			url : "/api/terminal/group?group=" + $("#finder_groups").val(),
-			success : loading
+			success : loadings
 		});
+	});
+	
+	//SID变化
+	$("#finder_sid").change(function() {
+		if($("#finder_sid").val() != ""){
+			groups();
+			jQuery.ajax({
+				type : "GET",
+				url : "/api/terminal/sid?sid=" + $("#finder_sid").val(),
+				success : loading
+			});
+		}
 	});
 	
 	$(document).ready(function() {
