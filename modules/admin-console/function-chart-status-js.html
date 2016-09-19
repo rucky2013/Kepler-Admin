@@ -1,3 +1,5 @@
+<script src="../assets/js/bootstrap-datetimepicker.js" charset="UTF-8"></script>
+<script src="../assets/js/locales/bootstrap-datetimepicker.fr.js" charset="UTF-8"></script>
 <script src="../assets/js/chart/highcharts.js"></script>
 <script src="../assets/js/chart/modules/exporting.js"></script>
 <script src="function-chart-js-theme.js"></script>
@@ -5,47 +7,45 @@
 <script>
 	$("#navigation").html("主机状态");
 	//收起左侧菜单
-	$("#sidebar-collapse").click();
-	$("#nav-search").empty();
-	//更新右上侧Select时间区间(最后20分钟, 最后60分钟, 最后120分钟)
-	$("#nav-search").append("<select id=\"period\" style=\"width:200px;\"><option value=\"20\">Last 20 MINs</option><option value=\"60\">Last 60 MINs</option><option value=\"120\">Last 120 MINs</option></select>");
+	
+	var fields = ['memory-max', 'memory-used', 'thread-active-jvm', 'thread-active-kepler', 'traffic-input', 'traffic-output', 'quality-waiting', 'quality-breaking', 'quality-demoting', 'gc-1', 'gc-2'];
+	
 	//加载主机状态	
 	function loadStatus() {
 		jQuery.ajax({
 			type : "GET",
-			url : "/api/chart/status?sid=" + param("sid") + "&offset=" + $("#period").val(),
+			url : "/api/chart/status?sid=" + param("sid") + "&start=" + $("#time_start").val() + "&end=" + $("#time_end").val(),
 			success : function callback(data) {
 				// 内存图表
-				if($("#memory-heap").highcharts() == null){
-					//请求
-					var request = buildChart("Request(Waiting)", "Request(Waiting)", "Waiting", data.request.data);
-					//负载
-					var loadaverage = buildChart("Load average", "Load average", "Load average", data.loadAverage.data);
+				if($("#memory-max").highcharts() == null){
 					//内存
-					var free = buildChart("Heap memory free", "Heap memory free(MB)", "free", data.memoryFree.data);
-					var heap = buildChart("Heap memory used", "Heap memory used(MB)", "heap", data.memoryHeap.data);
-					var nonHeap = buildChart("Non-heap memory used", "Non-heap memory used(MB)", "non-heap", data.memoryNonHeap.data);
+					var max = buildChart("最大堆内存", "最大堆内存", "MB", data.memoryMax.data);
+					var used = buildChart("已用堆内存", "已用堆内存", "MB", data.memoryUsed.data);
 					//线程
-					var thread4vm = buildChart("Active thread in JVM", "Active thread in JVM", "thread-jvm", data.thread4vm.data);
-					var thread4stacks = buildChart("All thread in Stacks", "All thread in Stacks", "thread-stacks", data.thread4stacks.data);
-					var thread4kepler = buildChart("Active thread in Kepler", "Active thread in Kepler", "thread-kepler", data.thread4kepler.data);
+					var threadJvm = buildChart("活跃线程数量-JVM", "活跃线程数量-JVM", "JVM", data.threadJvm.data);
+					var threadFramework = buildChart("活跃线程数量-框架", "活跃线程数量-框架", "框架", data.threadFramework.data);
 					//流量
-					var trafficInput = buildChart("Traffic input", "Traffic input", "Traffic input", data.trafficInput.data);
-					var trafficOutput = buildChart("Traffic Output", "Traffic Output", "Traffic output", data.trafficOutput.data);
-					//GC(YGc/OGc)
+					var trafficInput = buildChart("入站流量", "入站流量", "Byte", data.trafficInput.data);
+					var trafficOutput = buildChart("出站流量", "出站流量", "Byte", data.trafficOutput.data);
+					//质量
+					var qualityWaiting = buildChart("请求等待", "请求等待", "等待", data.qualityWaiting.data);
+					var qualityBreaking = buildChart("连接熔断", "连接熔断", "熔断", data.qualityBreaking.data);
+					var qualityDemoting = buildChart("服务降级", "服务降级", "降级", data.qualityDemoting.data);
+					// GC(YGc/FGc)
 					var gc = new Array();
 					for(var index = 0; index < data.gc.length; index++){
-						gc[index] = buildChart(data.gc[index].title, data.gc[index].title, data.gc[index].title, data.gc[index].data);
+						var title = "垃圾收集耗时 [" + data.gc[index].title + "]";
+						gc[index] = buildChart(title, title, "ms", data.gc[index].data);
 					}
 					//首次初始化
-					draw([free, heap, nonHeap, thread4vm, thread4stacks, thread4kepler, request, loadaverage, trafficInput, trafficOutput].concat(gc), ['memory-free', 'memory-heap', 'memory-non-heap', 'thread-jvm', 'thread-stacks','thread-kepler', 'request', 'loadaverage', 'traffic-input', 'traffic-output', 'gc_1', 'gc_2']);
+					draw([max, used, threadJvm, threadFramework, trafficInput, trafficOutput, qualityWaiting, qualityBreaking, qualityDemoting].concat(gc), fields);
 				}else{
 					var gc4redraw = new Array();
 					for(var index = 0; index < data.gc.length; index++){
 						gc4redraw[index] = data.gc[index].data;
 					}
 					//重绘
-					redraw([data.memoryFree.data, data.memoryHeap.data, data.memoryNonHeap.data, data.thread4vm.data, data.thread4stacks.data, data.thread4kepler.data, data.request.data, data.loadAverage.data, data.trafficInput.data, data.trafficOutput.data].concat(gc4redraw), ['memory-free', 'memory-heap', 'memory-non-heap', 'thread-jvm', 'thread-stacks','thread-kepler', 'request', 'loadaverage', 'traffic-input', 'traffic-output', 'gc_1', 'gc_2']);
+					redraw([data.memoryMax.data, data.memoryUsed.data, data.threadJvm.data, data.threadFramework.data, data.trafficInput.data, data.trafficOutput.data, data.qualityWaiting.data, data.qualityBreaking.data, data.qualityDemoting.data].concat(gc4redraw), fields);
 				}
 				$("#chart_status_title").html(param("sid"));
 			}
@@ -65,8 +65,18 @@
 	}
 	
 	//切换时间段时重绘
-	$("#period").change(function() {
+	$("#search").click(function() {
 		loadStatus();
+	});
+	
+	$(".form_datetime").datetimepicker({
+		weekStart: 1,
+		todayBtn: 1,
+		autoclose: 1,
+		startView: 2,
+		forceParse: 0,
+		showMeridian: 1,
+		todayHighlight: 1
 	});
 	
 	window.onload = function() {

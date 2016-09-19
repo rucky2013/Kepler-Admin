@@ -1,8 +1,12 @@
 package com.kepler.admin.controller;
 
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kepler.admin.domain.Period;
@@ -72,7 +76,7 @@ public class ChartController {
 	 */
 	@RequestMapping(value = "/status", method = RequestMethod.GET)
 	@ResponseBody
-	public StatusDataset status(String sid, Period period, int offset, int length) {
-		return this.status.status(sid, offset);
+	public StatusDataset status(String sid, @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date start, @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date end) {
+		return this.status.status(sid, start, end);
 	}
 }

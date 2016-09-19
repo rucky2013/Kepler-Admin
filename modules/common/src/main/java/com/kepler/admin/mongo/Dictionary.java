@@ -19,24 +19,28 @@ public interface Dictionary {
 
 	public static final String FIELD_RTT = "rtt";
 
+	public static final String FIELD_TIMES = "times";
+
+	public static final String FIELD_DATAS = "datas";
+
 	public static final String FIELD_HOSTS = "hosts";
 
 	public static final String FIELD_TOTAL = "total";
-	
+
 	public static final String FIELD_TRACE = "trace";
 
 	public static final String FIELD_STATUS = "status";
 
 	public static final String FIELD_METHOD = "method";
-	
+
 	public static final String FIELD_FAILED = "failed";
-	
+
 	public static final String FIELD_SERVICE = "service";
-	
+
 	public static final String FIELD_SERVICES = "services";
 
 	public static final String FIELD_VERSION = "version";
-	
+
 	public static final String FIELD_TIMEOUT = "timeout";
 
 	public static final String FIELD_EXCEPTION = "exception";
@@ -71,6 +75,8 @@ public interface Dictionary {
 
 	public static final String FIELD_PERIOD_MINUTE = "minute";
 	
+	public static final String FIELD_PERIOD_SECOND = "second";
+
 	public static final String FIELD_PERIOD_INTERVAL = "period_interval";
 
 	public Object get(String key);

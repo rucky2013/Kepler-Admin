@@ -14,42 +14,39 @@ public class StatusDataset {
 
 	private Map<String, ChartLine> gc = new HashMap<String, ChartLine>();
 
-	private ChartLine memoryFree;
+	private ChartLine memoryMax;
 
-	private ChartLine memoryHeap;
-
-	private ChartLine memoryNonHeap;
-
-	private ChartLine thread4vm;
-
-	private ChartLine thread4kepler;
-
-	private ChartLine thread4stacks;
+	private ChartLine memoryUsed;
 
 	private ChartLine trafficInput;
 
 	private ChartLine trafficOutput;
 
-	private ChartLine loadAverage;
+	private ChartLine threadJvm;
 
-	private ChartLine request;
+	private ChartLine threadFramework;
+
+	private ChartLine qualityWaiting;
+
+	private ChartLine qualityBreaking;
+
+	private ChartLine qualityDemoting;
 
 	public StatusDataset(String title) {
 		super();
 		// Memory
-		this.memoryFree = ChartLine.def(title);
-		this.memoryHeap = ChartLine.def(title);
-		this.memoryNonHeap = ChartLine.def(title);
-		// Thread
-		this.thread4vm = ChartLine.def(title);
-		this.thread4kepler = ChartLine.def(title);
-		this.thread4stacks = ChartLine.def(title);
+		this.memoryMax = ChartLine.def(title);
+		this.memoryUsed = ChartLine.def(title);
 		// 流量
 		this.trafficInput = ChartLine.def(title);
 		this.trafficOutput = ChartLine.def(title);
-		// Other
-		this.request = ChartLine.def(title);
-		this.loadAverage = ChartLine.def(title);
+		// Thread
+		this.threadJvm = ChartLine.def(title);
+		this.threadFramework = ChartLine.def(title);
+		// 质量
+		this.qualityWaiting = ChartLine.def(title);
+		this.qualityBreaking = ChartLine.def(title);
+		this.qualityDemoting = ChartLine.def(title);
 	}
 
 	public StatusDataset gc(Object[] data, String title) {
@@ -61,33 +58,38 @@ public class StatusDataset {
 		return this;
 	}
 
-	public StatusDataset memoryFree(Object[] data) {
-		this.memoryFree.add(data);
+	public StatusDataset memoryMax(Object[] data) {
+		this.memoryMax.add(data);
 		return this;
 	}
 
-	public StatusDataset memoryHeap(Object[] data) {
-		this.memoryHeap.add(data);
+	public StatusDataset memoryUsed(Object[] data) {
+		this.memoryUsed.add(data);
 		return this;
 	}
 
-	public StatusDataset memoryNonHeap(Object[] data) {
-		this.memoryNonHeap.add(data);
+	public StatusDataset threadJvm(Object[] data) {
+		this.threadJvm.add(data);
 		return this;
 	}
 
-	public StatusDataset thread4vm(Object[] data) {
-		this.thread4vm.add(data);
+	public StatusDataset threadFramework(Object[] data) {
+		this.threadFramework.add(data);
 		return this;
 	}
 
-	public StatusDataset thread4stacks(Object[] data) {
-		this.thread4stacks.add(data);
+	public StatusDataset qualityWaiting(Object[] data) {
+		this.qualityWaiting.add(data);
 		return this;
 	}
 
-	public StatusDataset thread4kepler(Object[] data) {
-		this.thread4kepler.add(data);
+	public StatusDataset qualityDemoting(Object[] data) {
+		this.qualityDemoting.add(data);
+		return this;
+	}
+
+	public StatusDataset qualityBreaking(Object[] data) {
+		this.qualityBreaking.add(data);
 		return this;
 	}
 
@@ -101,38 +103,20 @@ public class StatusDataset {
 		return this;
 	}
 
-	public StatusDataset loadAverage(Object[] data) {
-		this.loadAverage.add(data);
-		return this;
+	public ChartLine getMemoryMax() {
+		return this.memoryMax;
 	}
 
-	public StatusDataset request(Object[] data) {
-		this.request.add(data);
-		return this;
+	public ChartLine getMemoryUsed() {
+		return this.memoryUsed;
 	}
 
-	public ChartLine getMemoryFree() {
-		return this.memoryFree;
+	public ChartLine getThreadJvm() {
+		return this.threadJvm;
 	}
 
-	public ChartLine getMemoryHeap() {
-		return this.memoryHeap;
-	}
-
-	public ChartLine getMemoryNonHeap() {
-		return this.memoryNonHeap;
-	}
-
-	public ChartLine getThread4vm() {
-		return this.thread4vm;
-	}
-
-	public ChartLine getThread4kepler() {
-		return this.thread4kepler;
-	}
-
-	public ChartLine getThread4stacks() {
-		return this.thread4stacks;
+	public ChartLine getThreadFramework() {
+		return this.threadFramework;
 	}
 
 	public ChartLine getTrafficInput() {
@@ -143,12 +127,16 @@ public class StatusDataset {
 		return this.trafficOutput;
 	}
 
-	public ChartLine getLoadAverage() {
-		return this.loadAverage;
+	public ChartLine getQualityWaiting() {
+		return this.qualityWaiting;
 	}
 
-	public ChartLine getRequest() {
-		return this.request;
+	public ChartLine getQualityDemoting() {
+		return this.qualityDemoting;
+	}
+
+	public ChartLine getQualityBreaking() {
+		return this.qualityBreaking;
 	}
 
 	public Collection<ChartLine> getGc() {

@@ -1,6 +1,10 @@
 package com.kepler.admin.statistics.chart.impl;
 
+import java.util.Date;
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.kepler.admin.domain.Period;
 import com.kepler.admin.mongo.Dictionary;
@@ -9,6 +13,8 @@ import com.kepler.admin.mongo.impl.MongoUtils;
 import com.kepler.admin.resource.terminal.TerminalStatusFinder;
 import com.kepler.admin.statistics.chart.StatusDataset;
 import com.kepler.admin.statistics.chart.StatusService;
+import com.kepler.config.PropertiesUtils;
+import com.kepler.org.apache.commons.lang.reflect.MethodUtils;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -19,10 +25,15 @@ import com.mongodb.DBObject;
  */
 public class StatusServiceImpl implements StatusService {
 
+	// 默认偏移量, 5分钟
+	private static final int OFFSET = PropertiesUtils.get(StatusServiceImpl.class.getName().toLowerCase() + ".offset", 60 * 5);
+
 	private static final DBObject SORT = BasicDBObjectBuilder.start(Dictionary.FIELD_PERIOD, 1).get();
 
+	private static final Log LOGGER = LogFactory.getLog(StatusServiceImpl.class);
+
 	private final TerminalStatusFinder finder;
-	
+
 	private final MongoConfig status;
 
 	public StatusServiceImpl(MongoConfig status, TerminalStatusFinder finder) {
@@ -30,12 +41,25 @@ public class StatusServiceImpl implements StatusService {
 		this.finder = finder;
 	}
 
+	/**
+	 * 计算时间偏移量(指定时间转换为周期(秒)后减去偏移量)
+	 * 
+	 * @param date 原始时间
+	 * @param offset 时间偏移
+	 * @return
+	 */
+	private long offset(Date date, int offset) {
+		return Period.SECOND.period(date != null ? date.getTime() : System.currentTimeMillis()) - offset;
+	}
+
 	@Override
-	public StatusDataset status(String sid, int offset) {
+	public StatusDataset status(String sid, Date start, Date end) {
+		/**
+		 * 索引, Peroid - SID
+		 */
 		BasicDBObjectBuilder query = BasicDBObjectBuilder.start();
-		// 周期 + SID
+		query.add(Dictionary.FIELD_PERIOD, BasicDBObjectBuilder.start().add("$gte", this.offset(start, StatusServiceImpl.OFFSET)).add("$lte", this.offset(end, 0)).get());
 		query.add(Dictionary.FIELD_HOST_LOCAL_SID, sid);
-		query.add(Dictionary.FIELD_PERIOD, BasicDBObjectBuilder.start("$gte", Period.MINUTE.period() - offset).get());
 		// 按周期排序
 		return new MongoDataset(sid, this.status.collection().find(query.get()).sort(StatusServiceImpl.SORT));
 	}
@@ -48,41 +72,88 @@ public class StatusServiceImpl implements StatusService {
 			try (DBCursor iterator = cursor) {
 				while (iterator.hasNext()) {
 					DBObject current = iterator.next();
-					DBObject status = MongoUtils.asDBObject(current, Dictionary.FIELD_STATUS);
-					// 周期时间
-					long time = Period.MINUTE.convert(MongoUtils.asLong(current, Dictionary.FIELD_PERIOD));
-					this.memory(time, status);
-					this.thread(time, status);
-					this.traffic(time, status);
-					// GC
-					this.gc(time, status, (List<String>) StatusServiceImpl.this.finder.sid(sid).getStatus().get("gc_names"));
-					super.loadAverage(new Object[] { time, MongoUtils.asDouble(status, "running_loadaverage", 0) });
-					super.request(new Object[] { time, MongoUtils.asLong(status, "request", 0) });
+					this.add("thread_active_jvm", "threadJvm", current);
+					this.add("thread_active_framework", "threadFramework", current);
+					this.add("memory_heap_max", "memoryMax", current, (1024 * 1024));
+					this.add("memory_heap_used", "memoryUsed", current, (1024 * 1024));
+					this.traffic(current);
+					this.quality(current);
+					this.gc(current, (List<String>) StatusServiceImpl.this.finder.sid(sid).getStatus().get("gc_names"));
 				}
 			}
 		}
 
-		private void gc(long time, DBObject status, List<String> gcs) {
-			for (int index = 0; index < gcs.size(); index++) {
-				super.gc(new Object[] { time, MongoUtils.asLong(status, "gc_" + gcs.get(index).toLowerCase() + "_time", 0) }, gcs.get(index));
+		/**
+		 * 追加数据
+		 *
+		 * @param key
+		 * @param method
+		 * @param current
+		 */
+		private void add(String key, String method, DBObject current) {
+			this.add(key, method, current, 0);
+		}
+
+		/**
+		 * 追加数据
+		 *
+		 * @param key
+		 * @param method
+		 * @param current
+		 * @param base 基数
+		 */
+		private void add(String key, String method, DBObject current, int base) {
+			DBObject status = MongoUtils.asDBObject(current, key);
+			List<Long> times = MongoUtils.asList(status, "times");
+			List<Long> dates = MongoUtils.asList(status, "datas");
+			for (int index = 0; index < times.size(); index++) {
+				try {
+					MethodUtils.invokeMethod(this, method, new Object[] { new Object[] { Period.MILLISECOND.period(times.get(index)), dates.get(index) / base } });
+				} catch (Exception e) {
+					StatusServiceImpl.LOGGER.error(e.getMessage(), e);
+				}
 			}
 		}
 
-		private void traffic(long time, DBObject status) {
-			super.trafficInput(new Object[] { time, MongoUtils.asLong(status, "traffic_input", 0) });
-			super.trafficOutput(new Object[] { time, MongoUtils.asLong(status, "traffic_output", 0) });
+		/**
+		 * 计算质量
+		 * 
+		 * @param current
+		 */
+		private void quality(DBObject current) {
+			long second = MongoUtils.asLong(current, Dictionary.FIELD_PERIOD);
+			super.qualityWaiting(new Object[] { second * 1000, MongoUtils.asLong(current, "quality_waiting", 0) });
+			super.qualityDemoting(new Object[] { second * 1000, MongoUtils.asLong(current, "quality_demoting", 0) });
+			super.qualityBreaking(new Object[] { second * 1000, MongoUtils.asLong(current, "quality_breaking", 0) });
 		}
 
-		private void memory(long time, DBObject status) {
-			super.memoryHeap(new Object[] { time, MongoUtils.asLong(status, "memory_heap_used", 0) / (1024 * 1024) });
-			super.memoryNonHeap(new Object[] { time, MongoUtils.asLong(status, "memory_nonheap_used", 0) / (1024 * 1024) });
-			super.memoryFree(new Object[] { time, (MongoUtils.asLong(status, "memory_heap_max", 0) - MongoUtils.asLong(status, "memory_heap_used", 0)) / (1024 * 1024) });
+		/**
+		 * 计算流量
+		 * 
+		 * @param current
+		 */
+		private void traffic(DBObject current) {
+			long second = MongoUtils.asLong(current, Dictionary.FIELD_PERIOD);
+			super.trafficInput(new Object[] { second * 1000, MongoUtils.asLong(current, "traffic_input", 0) });
+			super.trafficOutput(new Object[] { second * 1000, MongoUtils.asLong(current, "traffic_output", 0) });
 		}
 
-		private void thread(long time, DBObject status) {
-			super.thread4vm(new Object[] { time, MongoUtils.asLong(status, "thread_active", 0) });
-			super.thread4stacks(new Object[] { time, MongoUtils.asLong(status, "thread_stacks", 0) });
-			super.thread4kepler(new Object[] { time, MongoUtils.asLong(status, "thread_framework_active", 0) });
+		/**
+		 * 计算垃圾回收
+		 * 
+		 * @param current
+		 * @param collector
+		 */
+		private void gc(DBObject current, List<String> collector) {
+			for (int index = 0; index < collector.size(); index++) {
+				String name = collector.get(index);
+				DBObject status = MongoUtils.asDBObject(current, name);
+				List<Long> times = MongoUtils.asList(status, "times");
+				List<Long> dates = MongoUtils.asList(status, "datas");
+				for (int each = 0; each < times.size(); each++) {
+					super.gc(new Object[] { Period.MILLISECOND.period(times.get(each)), dates.get(each) }, name);
+				}
+			}
 		}
 	}
 }

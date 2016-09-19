@@ -6,6 +6,7 @@ import com.kepler.admin.domain.Period;
 import com.kepler.admin.mongo.Dictionary;
 import com.kepler.admin.mongo.MongoConfig;
 import com.kepler.admin.status.Feeder;
+import com.kepler.admin.status.Point;
 import com.kepler.annotation.Autowired;
 import com.kepler.host.Host;
 import com.mongodb.BasicDBObjectBuilder;
@@ -35,15 +36,35 @@ public class StatusHandler implements Feeder {
 		this.status.collection().index(StatusHandler.INDEX);
 	}
 
-	public void feed(Host host, Map<String, Object> status) {
-		// Query (触发周期 + SID)
-		BasicDBObjectBuilder query = BasicDBObjectBuilder.start();
-		query.add(Dictionary.FIELD_PERIOD, Period.MINUTE.period());
-		query.add(Dictionary.FIELD_HOST_LOCAL_SID, host.sid());
-		// Update (Status)
-		BasicDBObjectBuilder update = BasicDBObjectBuilder.start();
-		update.add(Dictionary.FIELD_STATUS, status);
-		// 每次更新覆盖指定周期主机的Status
-		this.status.collection().update(query.get(), BasicDBObjectBuilder.start("$set", update.get()).get(), true, false);
+	@Override
+	@Deprecated
+	public void feed(Host local, Map<String, Object> status) {
+	}
+
+	@Override
+	public void feed(long timestamp, Host local, Map<String, Point> status) {
+		// Period(秒) - SID(对应索引)
+		BasicDBObjectBuilder insert = BasicDBObjectBuilder.start().add(Dictionary.FIELD_PERIOD, Period.SECOND.period(timestamp)).add(Dictionary.FIELD_HOST_LOCAL_SID, local.sid());
+		for (String field : status.keySet()) {
+			Object value = status.get(field);
+			if (Point.class.isAssignableFrom(value.getClass())) {
+				this.point(insert, field, value);
+			} else {
+				insert.add(field, value);
+			}
+		}
+		this.status.collection().save(insert.get());
+	}
+
+	/**
+	 * 构建Point数据
+	 * 
+	 * @param insert
+	 * @param field
+	 * @param value
+	 */
+	private void point(BasicDBObjectBuilder insert, String field, Object value) {
+		Point point = Point.class.cast(value);
+		insert.add(field, BasicDBObjectBuilder.start().add(Dictionary.FIELD_TIMES, point.times()).add(Dictionary.FIELD_DATAS, point.datas()).get());
 	}
 }
