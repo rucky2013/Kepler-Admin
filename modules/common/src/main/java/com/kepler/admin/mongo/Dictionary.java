@@ -20,6 +20,8 @@ public interface Dictionary {
 	public static final String FIELD_RTT = "rtt";
 
 	public static final String FIELD_TIMES = "times";
+	
+	public static final String FIELD_CAUSE = "cause";
 
 	public static final String FIELD_DATAS = "datas";
 

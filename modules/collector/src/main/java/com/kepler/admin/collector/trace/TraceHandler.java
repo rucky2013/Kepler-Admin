@@ -28,13 +28,14 @@ public class TraceHandler implements Feeder {
 	@Override
 	public void feed(long timestamp, List<TraceCause> cause) {
 		// 周期快照
-		long minute = Period.MINUTE.period(timestamp);
+		long second = Period.SECOND.period(timestamp);
 		// 开启Batch
 		BulkWriteOperation batch = this.trace.collection().bulkWrite();
 		for (TraceCause each : cause) {
 			BasicDBObjectBuilder builder = BasicDBObjectBuilder.start();
-			builder.add(Dictionary.FIELD_PERIOD, minute).add(Dictionary.FIELD_TRACE, each.trace());
-			builder.add(Dictionary.FIELD_SERVICE, each.service().service()).add(Dictionary.FIELD_VERSION, each.service().versionAndCatalog()).add(Dictionary.FIELD_METHOD, each.method()).get();
+			builder.add(Dictionary.FIELD_PERIOD, second).add(Dictionary.FIELD_SERVICE, each.service().service()).add(Dictionary.FIELD_VERSION, each.service().versionAndCatalog()).add(Dictionary.FIELD_METHOD, each.method());
+			builder.add(Dictionary.FIELD_TRACE, each.trace());
+			builder.add(Dictionary.FIELD_CAUSE, each.cause());
 			batch.insert(builder.get());
 		}
 		batch.execute();
