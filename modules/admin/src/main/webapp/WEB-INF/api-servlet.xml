@@ -51,6 +51,7 @@
 	</bean>
 
 	<bean class="com.kepler.admin.controller.TraceController">
+		<constructor-arg ref="kepler.admin.trace.collector" />
 		<constructor-arg ref="kepler.admin.trace" />
 	</bean>
 

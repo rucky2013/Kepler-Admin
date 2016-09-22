@@ -12,6 +12,7 @@
 	<import resource="kepler-context.xml" />
 	<import resource="kepler-curator.xml" />
 	<import resource="kepler-service.xml" />
+	<import resource="kepler-traces.xml" />
 	<import resource="kepler-mongo.xml" />
 
 </beans>

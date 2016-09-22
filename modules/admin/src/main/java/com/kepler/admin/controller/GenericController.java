@@ -1,11 +1,14 @@
 package com.kepler.admin.controller;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kepler.KeplerGenericException;
 import com.kepler.admin.generic.GenericRequest;
 import com.kepler.admin.generic.GenericTemplate;
 import com.kepler.admin.generic.impl.DefaultRequest;
@@ -78,16 +81,16 @@ public class GenericController {
 	 */
 	public static class DefaultResponse {
 
-		private final String throwable;
+		private final ThrowableCause throwable;
 
 		private final Object response;
 
 		private final long elapse;
-
-		public DefaultResponse(String throwable, long start) {
+		
+		public DefaultResponse(Throwable throwable, long start) {
 			super();
 			this.elapse = System.currentTimeMillis() - start;
-			this.throwable = throwable;
+			this.throwable = new ThrowableCause(throwable);
 			this.response = null;
 		}
 
@@ -98,7 +101,7 @@ public class GenericController {
 			this.throwable = null;
 		}
 
-		public String getThrowable() {
+		public ThrowableCause getThrowable() {
 			return this.throwable;
 		}
 
@@ -112,6 +115,40 @@ public class GenericController {
 
 		public long getElapse() {
 			return this.elapse;
+		}
+	}
+
+	/**
+	 * 用于异常分析
+	 * 
+	 * @author KimShen
+	 *
+	 */
+	public static class ThrowableCause {
+
+		private final Map<String, Object> params;
+
+		private final String message;
+
+		public ThrowableCause(Throwable throwable) {
+			super();
+			// 泛化异常分析
+			if (KeplerGenericException.class.isAssignableFrom(throwable.getClass())) {
+				KeplerGenericException generic = KeplerGenericException.class.cast(throwable);
+				this.message = generic.getMessage();
+				this.params = generic.getFields();
+			} else {
+				this.message = throwable.getMessage();
+				this.params = null;
+			}
+		}
+
+		public Map<String, Object> getParams() {
+			return this.params;
+		}
+
+		public String getMessage() {
+			return this.message;
 		}
 	}
 }

@@ -7,6 +7,8 @@
 	//更新导航
 	$("#navigation").html("客户端统计");
 	
+	var template = "<tr><td>#{method}</td><td>#{cause}</td><td>#{trace}</td></tr>";
+	
 	function loadClients() {
 		jQuery.ajax({
 			type : "GET",
@@ -18,6 +20,18 @@
 				draw([total, error, elapse], ['clients-total', 'clients-error', 'clients-elapse']);
 				draw(chart);
 				
+			}
+		});
+	}
+	
+	function loadCauses() {
+		jQuery.ajax({
+			type : "GET",
+			url : "/api/traces/causes?service=" + param("service") + "&versionAndCatalog=" + param("versionAndCatalog") + "&method=" + param("method") + "&period=" + param("period") + "&offset=" + param("offset") + "&length=" + param("length"),
+			success : function callback(data) {
+				$(data).each(function(index, element){
+					$("#trace-tab_tbody").append(template.replace("#{method}", element.method).replace("#{trace}", element.trace).replace("#{cause}", element.cause));
+				});
 			}
 		});
 	}
@@ -36,5 +50,6 @@
 		$("#info_offset").html(param("offset"));
 		$("#info_length").html(param("length"));
 		loadClients();
+		loadCauses();
 	}
 </script>

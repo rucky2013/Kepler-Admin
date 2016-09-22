@@ -8,5 +8,11 @@ import java.util.List;
  */
 public interface TraceService {
 
-	public List<?> trace(String traceId);
+	/**
+	 * 指定链路的Trace
+	 * 
+	 * @param trace
+	 * @return
+	 */
+	public List<?> trace(String trace);
 }

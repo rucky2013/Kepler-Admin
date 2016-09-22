@@ -30,8 +30,4 @@
 		<constructor-arg ref="kepler.mongo.config.transfer.minute" />
 	</bean>
 
-	<bean id="kepler.admin.trace" class="com.kepler.admin.traces.impl.TraceServiceImpl">
-		<constructor-arg ref="kepler.mongo.trace" />
-	</bean>
-
 </beans>

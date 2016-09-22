@@ -92,7 +92,7 @@ pre {
         try {
             resetView();
             loading.html("Waiting...");            
-            $.get("/api/traces/get?traceId=" + traceId, function (spans) {
+            $.get("/api/traces/get?trace=" + traceId, function (spans) {
                 if (spans) {
                     loading.html("");
                     if (Array.isArray(spans)) {
