@@ -311,4 +311,12 @@ pre {
             $("#traceInfo").removeClass("glowing-border");
         }, 800);
     }
+    
+    $(document).ready(function() {
+		var trace = param("trace");
+		if(trace != "" && trace != null) {
+			$("#traceId").val(trace);
+			$("#traceSearch").click();
+		}
+	});
 </script>

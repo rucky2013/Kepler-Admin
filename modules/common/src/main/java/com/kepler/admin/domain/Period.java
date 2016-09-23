@@ -33,19 +33,18 @@ public enum Period {
 	}
 
 	/**
-	 * 指定毫秒数转换为当前周期(同时计算时区偏移量)
+	 * 指定单位的周期转换为当前单位的周期(计算时区偏移量)
 	 * 
 	 * @param period 指定周期单位
 	 * @param value  指定周期值
 	 * @return
 	 */
 	public long period(Period period, long value) {
-		long millis = period.convert(value);
-		return Period.UNITS.get(this).convert(millis, TimeUnit.MILLISECONDS);
+		return Period.UNITS.get(this).convert(period.convert(value), TimeUnit.MILLISECONDS);
 	}
 
 	/**
-	 * 指定时间数转换为当前周期(同时计算时区偏移量)
+	 * 指定时间转换为当前单位的周期(计算时区偏移量)
 	 * 
 	 * @param date
 	 * @return
@@ -55,7 +54,7 @@ public enum Period {
 	}
 
 	/**
-	 * 指定毫秒数转换为当前周期(同时计算时区偏移量)
+	 * 指定毫秒数转换为当前单位的周期(计算时区偏移量)
 	 * 
 	 * @param millis
 	 * @return
@@ -74,12 +73,24 @@ public enum Period {
 	}
 
 	/**
-	 * 周期转换为毫秒值
+	 * 周期转换为毫秒数(忽略时区偏移量)
 	 * 
 	 * @param period
 	 * @return
 	 */
 	public long convert(long period) {
 		return period * Period.BASES.get(this);
+	}
+
+	/**
+	 * 周期转换为毫秒数(计算时区偏移量)
+	 *
+	 * @param period
+	 * @param zone
+	 * @return
+	 */
+	public long convert(long period, TimeZone zone) {
+		long timestamp = period * Period.BASES.get(this);
+		return timestamp - zone.getOffset(timestamp);
 	}
 }

@@ -1,7 +1,9 @@
 package com.kepler.admin.traces.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import com.kepler.admin.domain.Period;
 import com.kepler.admin.mongo.Dictionary;
@@ -25,6 +27,21 @@ public class TraceCollectorImpl implements TraceCollector {
 	 */
 	private static final int MAX = PropertiesUtils.get(TraceCollectorImpl.class.getName().toLowerCase() + ".max", 60 * 24 * 15);
 
+	/**
+	 * 单词查询范围补充
+	 */
+	private static final int PADDING = PropertiesUtils.get(TraceCollectorImpl.class.getName().toLowerCase() + ".padding", 10);
+
+	/**
+	 * 单词查询最大数据量
+	 */
+	private static final int LIMIT = PropertiesUtils.get(TraceCollectorImpl.class.getName().toLowerCase() + ".limit", 50);
+
+	/**
+	 * 排序
+	 */
+	private static final DBObject SORT = BasicDBObjectBuilder.start().add(Dictionary.FIELD_PERIOD, -1).get();
+
 	private final MongoConfig mongo;
 
 	public TraceCollectorImpl(MongoConfig mongo) {
@@ -33,12 +50,12 @@ public class TraceCollectorImpl implements TraceCollector {
 
 	@Override
 	public List<Trace> causes(String service, String versionAndCatalog, String method, Period period, int offset, int length) {
-		long offset_start = Period.SECOND.period(period, period.period() - offset);
-		long offset_end = Period.SECOND.period(period, period.period() - offset + Math.min(length, TraceCollectorImpl.MAX));
+		long offset_start = Period.SECOND.period(period, period.period() - offset) - TraceCollectorImpl.PADDING;
+		long offset_end = Period.SECOND.period(period, period.period() - offset + Math.min(length, TraceCollectorImpl.MAX)) + TraceCollectorImpl.PADDING;
 		BasicDBObjectBuilder builder = BasicDBObjectBuilder.start();
 		builder.add(Dictionary.FIELD_PERIOD, BasicDBObjectBuilder.start().add("$gte", offset_start).add("$lte", offset_end).get());
 		builder.add(Dictionary.FIELD_SERVICE, service).add(Dictionary.FIELD_VERSION, versionAndCatalog).add(Dictionary.FIELD_METHOD, method);
-		return new TraceCauses(this.mongo.collection().find(builder.get()));
+		return new TraceCauses(this.mongo.collection().find(builder.get()).sort(TraceCollectorImpl.SORT).limit(TraceCollectorImpl.LIMIT));
 	}
 
 	private class TraceCauses extends ArrayList<Trace> {
@@ -63,6 +80,14 @@ public class TraceCollectorImpl implements TraceCollector {
 			this.ob = ob;
 		}
 
+		public String getHost() {
+			return MongoUtils.asString(this.ob, Dictionary.FIELD_HOST_LOCAL);
+		}
+
+		public String getDate() {
+			return new Date(Period.SECOND.convert(MongoUtils.asLong(this.ob, Dictionary.FIELD_PERIOD), TimeZone.getDefault())).toString();
+		}
+
 		@Override
 		public String getTrace() {
 			return MongoUtils.asString(this.ob, Dictionary.FIELD_TRACE);
@@ -74,13 +99,13 @@ public class TraceCollectorImpl implements TraceCollector {
 		}
 
 		@Override
-		public String getService() {
-			return MongoUtils.asString(this.ob, Dictionary.FIELD_SERVICE);
+		public String getMethod() {
+			return MongoUtils.asString(this.ob, Dictionary.FIELD_METHOD);
 		}
 
 		@Override
-		public String getMethod() {
-			return MongoUtils.asString(this.ob, Dictionary.FIELD_METHOD);
+		public String getService() {
+			return MongoUtils.asString(this.ob, Dictionary.FIELD_SERVICE);
 		}
 
 		@Override

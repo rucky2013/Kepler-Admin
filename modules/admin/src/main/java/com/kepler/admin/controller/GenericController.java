@@ -42,18 +42,22 @@ public class GenericController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	public DefaultResponse generic(@RequestBody DefaultRequest request) {
-		// 调用起始时间
-		long start = System.currentTimeMillis();
+		// 指定Tag
+		this.headers.get().put(Host.TAG_KEY, request.getTag());
+		DefaultResponse response = new DefaultResponse(TraceContext.get());
 		try {
-			// 指定Tag
-			this.headers.get().put(Host.TAG_KEY, request.getTag());
 			// 发送请求
-			DefaultResponse response = new DefaultResponse(this.generic.invoke(request.metadata(), request.getMethod(), request.getClasses(), request.getDatas()), start);
+			response.response(this.generic.invoke(request.metadata(), request.getMethod(), request.getClasses(), request.getDatas()));
 			// 记录历史(仅服务正常返回时)
 			this.template.set(request);
 			return response;
 		} catch (Throwable e) {
-			return new DefaultResponse(e.getMessage(), start);
+			return response.response(e);
+		} finally {
+			// 清除Tag
+			this.headers.get().delete(Host.TAG_KEY);
+			// 清除Trace
+			TraceContext.release();
 		}
 	}
 
@@ -81,24 +85,41 @@ public class GenericController {
 	 */
 	public static class DefaultResponse {
 
-		private final ThrowableCause throwable;
+		private final long start = System.currentTimeMillis();
 
-		private final Object response;
+		private final String trace;
 
-		private final long elapse;
-		
-		public DefaultResponse(Throwable throwable, long start) {
+		private ThrowableCause throwable;
+
+		private Object response;
+
+		private long elapse;
+
+		public DefaultResponse(String trace) {
 			super();
-			this.elapse = System.currentTimeMillis() - start;
-			this.throwable = new ThrowableCause(throwable);
-			this.response = null;
+			this.trace = trace;
 		}
 
-		public DefaultResponse(Object response, long start) {
-			super();
-			this.elapse = System.currentTimeMillis() - start;
+		/**
+		 * 指定异常
+		 * 
+		 * @param throwable
+		 */
+		public DefaultResponse response(Throwable throwable) {
+			this.throwable = new ThrowableCause(throwable);
+			this.elapse = System.currentTimeMillis() - this.start;
+			return this;
+		}
+
+		/**
+		 * 指定结果
+		 * 
+		 * @param response
+		 */
+		public DefaultResponse response(Object response) {
 			this.response = response;
-			this.throwable = null;
+			this.elapse = System.currentTimeMillis() - this.start;
+			return this;
 		}
 
 		public ThrowableCause getThrowable() {
@@ -110,7 +131,7 @@ public class GenericController {
 		}
 
 		public String getTrace() {
-			return TraceContext.get();
+			return this.trace;
 		}
 
 		public long getElapse() {

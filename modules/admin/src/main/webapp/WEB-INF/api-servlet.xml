@@ -56,8 +56,8 @@
 	</bean>
 
 	<bean class="com.kepler.admin.controller.ChartController">
-		<constructor-arg ref="kepler.admin.chart" />
 		<constructor-arg ref="kepler.admin.status" />
+		<constructor-arg ref="kepler.admin.chart" />
 	</bean>
 
 	<bean class="com.kepler.admin.controller.MethodController">
