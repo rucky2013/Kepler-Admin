@@ -30,7 +30,6 @@ public class InstanceImpl implements Instance {
 	}
 
 	public String getTag() {
-		// 防止异常数据进入ZK导致Admin无法使用
 		return StringUtils.defaultString(this.instance.host().tag(), Host.TAG_DEF);
 	}
 
@@ -44,8 +43,11 @@ public class InstanceImpl implements Instance {
 	}
 
 	public String getGroup() {
-		// 防止异常数据进入ZK导致Admin无法使用
 		return StringUtils.defaultString(this.instance.host().group(), Host.GROUP_DEF);
+	}
+
+	public String getApplication() {
+		return StringUtils.defaultString(this.instance.host().name(), "unknow");
 	}
 
 	public int getPriority() {

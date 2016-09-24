@@ -49,8 +49,12 @@ public class TerminalStatusImpl implements TerminalStatus {
 
 	@Override
 	public String getGroup() {
-		// 防止异常数据进入ZK导致Admin无法使用
 		return StringUtils.defaultString(this.status.getGroup(), Host.GROUP_DEF);
+	}
+
+	@Override
+	public String getApplication() {
+		return StringUtils.defaultString(this.status.getApplication(), "unknow");
 	}
 
 	@Override

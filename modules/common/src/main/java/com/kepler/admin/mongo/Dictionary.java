@@ -57,6 +57,8 @@ public interface Dictionary {
 
 	public static final String FIELD_HOST_LOCAL_TAG = "host_local_tag";
 
+	public static final String FIELD_HOST_LOCAL_NAME = "host_local_name";
+
 	public static final String FIELD_HOST_LOCAL_GROUP = "host_local_group";
 
 	public static final String FIELD_HOST_TARGET = "host_target";

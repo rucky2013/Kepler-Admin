@@ -1,6 +1,21 @@
 <script type="text/javascript">
     $("#navigation").html("泛化调用");
     
+  	//Select for Application
+	function application() {
+		jQuery.ajax({
+			type : "GET",
+			url : "/api/finder/applications?group=" + $("#finder_groups").val(),
+			success : function callback(data) {
+				$("#finder_applications").empty(); 
+				$("#finder_applications").prepend("<option value=''>Select Application ... </option>");
+				$(data).each(function(index, element){
+					$("#finder_applications").append("<option value='" + element + "'>" + element + "</option>"); 
+				});
+			}
+		});
+	}
+    
   	//Select for Groups
 	function groups() {
 		jQuery.ajax({
@@ -90,8 +105,21 @@
 		automatic(true);
 	});
 	
+	// Application变化
+	$("#finder_applications").change(function() {
+		// 重置
+		$("#request").val("");
+		$("#response").val("");
+		jQuery.ajax({
+			type : "GET",
+			url : "/api/finder/service/application?group=" + $("#finder_groups").val() + "&application=" + $("#finder_applications").val(),
+			success : loading
+		});
+	});
+	
 	// Group变化
 	$("#finder_groups").change(function() {
+		application();
 		// 重置
 		$("#request").val("");
 		$("#response").val("");

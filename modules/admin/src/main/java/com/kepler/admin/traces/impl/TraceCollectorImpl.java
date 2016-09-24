@@ -80,10 +80,6 @@ public class TraceCollectorImpl implements TraceCollector {
 			this.ob = ob;
 		}
 
-		public String getHost() {
-			return MongoUtils.asString(this.ob, Dictionary.FIELD_HOST_LOCAL);
-		}
-
 		public String getDate() {
 			return new Date(Period.SECOND.convert(MongoUtils.asLong(this.ob, Dictionary.FIELD_PERIOD), TimeZone.getDefault())).toString();
 		}
@@ -111,6 +107,20 @@ public class TraceCollectorImpl implements TraceCollector {
 		@Override
 		public String getVersionAndCatalog() {
 			return MongoUtils.asString(this.ob, Dictionary.FIELD_VERSION);
+		}
+
+		public String getHost() {
+			return MongoUtils.asString(this.ob, Dictionary.FIELD_HOST_LOCAL);
+		}
+
+		@Override
+		public String getGroup() {
+			return MongoUtils.asString(this.ob, Dictionary.FIELD_HOST_LOCAL_GROUP);
+		}
+
+		@Override
+		public String getApplication() {
+			return MongoUtils.asString(this.ob, Dictionary.FIELD_HOST_LOCAL_NAME);
 		}
 	}
 }

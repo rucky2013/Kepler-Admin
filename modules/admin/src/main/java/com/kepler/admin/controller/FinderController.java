@@ -62,6 +62,17 @@ public class FinderController {
 	}
 
 	/**
+	 * 获取服务名称集合
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "/applications", method = RequestMethod.GET)
+	@ResponseBody
+	public Collection<String> application(String group) {
+		return this.finder.application(group);
+	}
+
+	/**
 	 * 获取服务实例(SID + Service + Version)
 	 * 
 	 * @param sid
@@ -146,6 +157,18 @@ public class FinderController {
 	@ResponseBody
 	public Collection<ServiceAndVersion> service4group(String group) {
 		return new InstanceServices(this.finder.group(group));
+	}
+
+	/**
+	 * 获取指定业务分组和业务名称的的服务集合
+	 * 
+	 * @param group
+	 * @return
+	 */
+	@RequestMapping(value = "/service/application", method = RequestMethod.GET)
+	@ResponseBody
+	public Collection<ServiceAndVersion> service4application(String group, String application) {
+		return new InstanceServices(this.finder.application(group, application));
 	}
 
 	/**

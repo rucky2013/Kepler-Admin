@@ -1,6 +1,20 @@
 <script>
 	$("#navigation").html("服务管理");
 	var template = "<tr><td>#{service}</td><td>#{versionAndCatalog}</td><td><button id=\"config_#{id}\" data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-cog\"></button></td><td><button id=\"dependency_#{id}\" data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-sitemap\"></button></td></td><td><button id=\"chart_#{id}\" data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-line-chart\"></button></td></tr>";
+	//Select for Applications
+	function applications() {
+		jQuery.ajax({
+			type : "GET",
+			url : "/api/finder/applications?group=" +  $("#finder_groups").val(),
+			success : function callback(data) {
+				$("#finder_applications").empty(); 
+				$("#finder_applications").prepend("<option value=''>Select Application ... </option>");
+				$(data).each(function(index, element){
+					$("#finder_applications").append("<option value='" + element + "'>" + element + "</option>"); 
+				});
+			}
+		});
+	}
 	//Select for Groups
 	function groups() {
 		jQuery.ajax({
@@ -48,8 +62,20 @@
 		});
 	}
 	
+	//Application变化
+	$("#finder_applications").change(function() {
+		$("#finder_tags").val("");
+		jQuery.ajax({
+			type : "GET",
+			url : "/api/finder/service/application?group=" + $("#finder_groups").val() + "&application=" + $("#finder_applications").val(),
+			success : loading
+		});
+	});
+	
 	//Group变化
 	$("#finder_groups").change(function() {
+		//加载应用
+		applications();
 		//展示详情按钮
 		if($("#finder_groups").val() != "") {
 			$("#groups").empty();

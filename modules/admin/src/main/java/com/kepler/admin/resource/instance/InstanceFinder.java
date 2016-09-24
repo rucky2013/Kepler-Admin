@@ -26,6 +26,14 @@ public interface InstanceFinder {
 	public Collection<String> groups();
 
 	/**
+	 * 业务分组对应的业务名称集合
+	 * 
+	 * @param group
+	 * @return
+	 */
+	public Collection<String> application(String group);
+
+	/**
 	 * 获取SID对应的服务实例集合(单主机可能会发布多个服务)
 	 * 
 	 * @param sid
@@ -50,6 +58,15 @@ public interface InstanceFinder {
 	public Collection<Instance> group(String group);
 
 	/**
+	 * 获取业务分组和应用名称的对应的服务集合
+	 * 
+	 * @param group
+	 * @param application
+	 * @return
+	 */
+	public Collection<Instance> application(String group, String application);
+
+	/**
 	 * 获取指定服务 + 版本服务实例集合
 	 * 
 	 * @param service
@@ -57,7 +74,7 @@ public interface InstanceFinder {
 	 * @return
 	 */
 	public Collection<Instance> service4version(String service, String versionAndCatalog);
-	
+
 	/**
 	 * ZK路径对应的服务实例
 	 * 
@@ -75,7 +92,7 @@ public interface InstanceFinder {
 	 * @return
 	 */
 	public Instance sid(String sid, String service, String versionAndCatalog);
-	
+
 	/**
 	 * 服务 + 版本集合
 	 * 

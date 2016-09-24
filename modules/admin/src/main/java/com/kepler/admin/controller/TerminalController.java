@@ -39,6 +39,17 @@ public class TerminalController {
 	}
 
 	/**
+	 * 所有终端的业务分组集合(包含客户端)
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "/applications", method = RequestMethod.GET)
+	@ResponseBody
+	public Collection<String> applications(String group) {
+		return this.finder.applications(group);
+	}
+
+	/**
 	 * 业务分组对应主机状态集合
 	 * 
 	 * @param group
@@ -48,6 +59,18 @@ public class TerminalController {
 	@ResponseBody
 	public Collection<TerminalStatus> group(String group) {
 		return this.finder.group(group);
+	}
+
+	/**
+	 * 业务分组和业务名称对应主机状态集合
+	 * 
+	 * @param group
+	 * @return
+	 */
+	@RequestMapping(value = "/application", method = RequestMethod.GET)
+	@ResponseBody
+	public Collection<TerminalStatus> application(String group, String application) {
+		return this.finder.application(group, application);
 	}
 
 	/**

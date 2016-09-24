@@ -6,8 +6,6 @@ package com.kepler.admin.traces;
  */
 public interface Trace {
 
-	public String getHost();
-
 	public String getDate();
 
 	public String getTrace();
@@ -19,4 +17,11 @@ public interface Trace {
 	public String getService();
 
 	public String getVersionAndCatalog();
+
+	public String getHost();
+
+	public String getGroup();
+
+	public String getApplication();
+
 }

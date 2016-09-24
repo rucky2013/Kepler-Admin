@@ -7,6 +7,7 @@ import com.kepler.admin.mongo.Dictionary;
 import com.kepler.admin.mongo.MongoConfig;
 import com.kepler.admin.trace.Feeder;
 import com.kepler.annotation.Autowired;
+import com.kepler.host.Host;
 import com.kepler.trace.TraceCause;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.BulkWriteOperation;
@@ -26,13 +27,17 @@ public class TraceHandler implements Feeder {
 	}
 
 	@Override
-	public void feed(List<TraceCause> cause) {
+	public void feed(Host host, List<TraceCause> cause) {
 		// 开启Batch
 		BulkWriteOperation batch = this.trace.collection().bulkWrite();
 		for (TraceCause each : cause) {
 			BasicDBObjectBuilder builder = BasicDBObjectBuilder.start();
 			builder.add(Dictionary.FIELD_PERIOD, Period.SECOND.period(each.timestamp())).add(Dictionary.FIELD_SERVICE, each.service().service()).add(Dictionary.FIELD_VERSION, each.service().versionAndCatalog()).add(Dictionary.FIELD_METHOD, each.method());
-			builder.add(Dictionary.FIELD_HOST_LOCAL, each.host());
+			// 附加数据 主机 分组 名称
+			builder.add(Dictionary.FIELD_HOST_LOCAL, host.address());
+			builder.add(Dictionary.FIELD_HOST_LOCAL_NAME, host.name());
+			builder.add(Dictionary.FIELD_HOST_LOCAL_GROUP, host.group());
+			// 附加数据 原因
 			builder.add(Dictionary.FIELD_TRACE, each.trace());
 			builder.add(Dictionary.FIELD_CAUSE, each.cause());
 			batch.insert(builder.get());

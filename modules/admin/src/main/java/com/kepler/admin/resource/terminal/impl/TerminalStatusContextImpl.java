@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import com.kepler.admin.resource.terminal.TerminalStatus;
@@ -61,6 +62,25 @@ public class TerminalStatusContextImpl implements TerminalStatusFinder, Terminal
 
 	public Collection<TerminalStatus> group(String group) {
 		return this.group.get(group);
+	}
+
+	public Collection<TerminalStatus> application(String group, String application) {
+		List<TerminalStatus> matched = new ArrayList<TerminalStatus>();
+		for (TerminalStatus terminal : this.group(group)) {
+			if (terminal.getApplication().equals(application)) {
+				// 仅加载符合应用名称的终端
+				matched.add(terminal);
+			}
+		}
+		return matched;
+	}
+
+	public Collection<String> applications(String group) {
+		Set<String> applications = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+		for (TerminalStatus terminal : this.group(group)) {
+			applications.add(terminal.getApplication());
+		}
+		return applications;
 	}
 
 	public Collection<String> groups() {
@@ -130,6 +150,11 @@ public class TerminalStatusContextImpl implements TerminalStatusFinder, Terminal
 
 		@Override
 		public String getGroup() {
+			return "";
+		}
+
+		@Override
+		public String getApplication() {
 			return "";
 		}
 

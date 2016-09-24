@@ -1,3 +1,4 @@
+<script src="../assets/js/jquery.blockUI.js"></script>
 <script src="../assets/js/bootstrap-datetimepicker.js" charset="UTF-8"></script>
 <script src="../assets/js/locales/bootstrap-datetimepicker.fr.js" charset="UTF-8"></script>
 <script src="../assets/js/chart/highcharts.js"></script>
@@ -12,6 +13,7 @@
 	
 	//加载主机状态	
 	function loadStatus() {
+		$.blockUI({message:'<h4>加载中...</h4>' });
 		jQuery.ajax({
 			type : "GET",
 			url : "/api/chart/status?sid=" + param("sid") + "&start=" + $("#time_start").val() + "&end=" + $("#time_end").val(),
@@ -48,6 +50,7 @@
 					redraw([data.memoryMax.data, data.memoryUsed.data, data.threadJvm.data, data.threadFramework.data, data.trafficInput.data, data.trafficOutput.data, data.qualityWaiting.data, data.qualityBreaking.data, data.qualityDemoting.data].concat(gc4redraw), fields);
 				}
 				$("#chart_status_title").html(param("sid"));
+				$.unblockUI();
 			}
 		});
 	}

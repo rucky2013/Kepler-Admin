@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.kepler.admin.domain.ServiceAndVersion;
 import com.kepler.admin.resource.instance.Instance;
@@ -54,6 +56,15 @@ public class InstanceContextImpl implements InstanceFinder, InstanceContext {
 		return this.service4version.keySet();
 	}
 
+	public Collection<String> application(String group) {
+		Set<String> applications = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+		for (Instance instance : this.group(group)) {
+			// 迭代所有符合的实例并加载名称
+			applications.add(instance.getApplication());
+		}
+		return applications;
+	}
+
 	public Collection<String> groups() {
 		return this.group.keySet();
 	}
@@ -64,6 +75,17 @@ public class InstanceContextImpl implements InstanceFinder, InstanceContext {
 
 	public Collection<Instance> service4version(String service, String versionAndCatalog) {
 		return this.service4version.get(new ServiceAndVersion(service, versionAndCatalog));
+	}
+
+	public Collection<Instance> application(String group, String application) {
+		Collection<Instance> matched = new ArrayList<Instance>();
+		for (Instance instance : this.group.get(group)) {
+			// 迭代所有符合的实例并加载
+			if (instance.getApplication().equals(application)) {
+				matched.add(instance);
+			}
+		}
+		return matched;
 	}
 
 	public Collection<Instance> group(String group) {

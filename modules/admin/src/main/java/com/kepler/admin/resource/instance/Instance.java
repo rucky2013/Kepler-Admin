@@ -29,6 +29,13 @@ public interface Instance {
 	 * @return
 	 */
 	public String getGroup();
+	
+	/**
+	 * 业务应用
+	 * 
+	 * @return
+	 */
+	public String getApplication();
 
 	public int getPriority();
 
