@@ -1,3 +1,4 @@
+<script src="../assets/js/jquery.blockUI.js"></script>
 <script type="text/javascript">
     $("#navigation").html("泛化调用");
     
@@ -149,6 +150,7 @@
 	$("#invoke").click(function() {
 		// 格式化Request
 		format($("#request").val(), $("#request"));
+		$.blockUI({message:'<h4>加载中...</h4>' });
 	 	jQuery.ajax({
 			type : "POST",
 			url : "/api/generic",
@@ -158,6 +160,7 @@
 				$("#title_response").trigger("click");
 				// 格式化Response
 				format(data, $("#response"));
+				$.unblockUI();
 			}
 		}); 
 	});
