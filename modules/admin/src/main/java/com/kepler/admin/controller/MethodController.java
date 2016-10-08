@@ -67,7 +67,7 @@ public class MethodController {
 	 */
 	@RequestMapping(value = "/methods/group", method = RequestMethod.GET)
 	@ResponseBody
-	public List<MethodInvoker> methods4Group(String group, Period period, int offset, int length, SortBy sortBy) {
-		return this.methods.methods4group(group, period, offset, length, sortBy);
+	public List<MethodInvoker> methods4Group(String group, String application, Period period, int offset, int length, SortBy sortBy) {
+		return this.methods.methods4group(group, application, period, offset, length, sortBy);
 	}
 }

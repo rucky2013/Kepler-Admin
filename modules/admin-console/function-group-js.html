@@ -10,7 +10,7 @@
 		$.blockUI({message:'<h4>加载中...</h4>' });
 		jQuery.ajax({
 			type : "GET",
-			url : "/api/methods/group?group=" + param("group") + "&period=" +  $("#period").find('option:selected').text() + "&offset=" + period_offset() + "&length=" + period_length() + "&sortBy=" + $("#sortBy").val(),
+			url : "/api/methods/group?group=" + param("group") + "&application=" + param("application", "") + "&period=" +  $("#period").find('option:selected').text() + "&offset=" + period_offset() + "&length=" + period_length() + "&sortBy=" + $("#sortBy").val(),
 			success : function callback(data) {
 				$("#service-tab_tbody").empty();
 				$(data).each(function(index, element){

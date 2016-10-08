@@ -39,11 +39,12 @@ public interface MethodInvokerService {
 	 * group 维度的方法访问质量
 	 * 
 	 * @param group
+	 * @param application
 	 * @param period 周期单位
 	 * @param offset 偏移
 	 * @param length 长度
 	 * @param sort 	 排序器
 	 * @return
 	 */
-	public List<MethodInvoker> methods4group(String group, Period period, int offset, int length, SortBy sort);
+	public List<MethodInvoker> methods4group(String group, String application, Period period, int offset, int length, SortBy sort);
 }

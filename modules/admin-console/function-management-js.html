@@ -81,7 +81,7 @@
 			$("#groups").empty();
 			$("#groups").append("<button id=\"group\" data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-search\"></button>");
 			$("#group").click(function(){
-				window.open("/?function=function-group&group=" + $("#finder_groups").val());
+				window.open("/?function=function-group&group=" + $("#finder_groups").val() + "&application=" + $("#finder_applications").val());
 			});
 		}else {
 			$("#nav-search2").empty();

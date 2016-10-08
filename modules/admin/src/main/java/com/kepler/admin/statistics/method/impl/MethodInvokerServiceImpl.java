@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import com.kepler.admin.domain.Period;
 import com.kepler.admin.domain.ServiceAndVersion;
 import com.kepler.admin.mongo.Dictionary;
@@ -34,12 +36,12 @@ public class MethodInvokerServiceImpl extends Statistics implements MethodInvoke
 
 	private static final DBObject GROUP_SERVICE = Statistics.group(BasicDBObjectBuilder.start().add(Dictionary.FIELD_SERVICE, "$" + Dictionary.FIELD_SERVICE).add(Dictionary.FIELD_VERSION, "$" + Dictionary.FIELD_VERSION).add(Dictionary.FIELD_METHOD, "$" + Dictionary.FIELD_METHOD).get());
 
-	private final InstanceFinder instanceFinder;
+	private final InstanceFinder instance;
 
-	public MethodInvokerServiceImpl(MongoConfig transferDay, MongoConfig transferHour, MongoConfig transferMinute, InstanceFinder instanceFinder) {
+	public MethodInvokerServiceImpl(MongoConfig transferDay, MongoConfig transferHour, MongoConfig transferMinute, InstanceFinder instance) {
 		super();
 		super.configs(transferDay, transferHour, transferMinute);
-		this.instanceFinder = instanceFinder;
+		this.instance = instance;
 	}
 
 	@Override
@@ -55,10 +57,10 @@ public class MethodInvokerServiceImpl extends Statistics implements MethodInvoke
 	}
 
 	@Override
-	public List<MethodInvoker> methods4group(String group, Period period, int offset, int length, SortBy sort) {
+	public List<MethodInvoker> methods4group(String group, String application, Period period, int offset, int length, SortBy sort) {
 		List<MethodInvoker> methods4Group = new ArrayList<>();
-		// 获取分组所有服务
-		for (ServiceAndVersion serviceAndVersion : new InstanceServices(this.instanceFinder.group(group))) {
+		// 获取分组所有服务, 如果没有传递application则查询整个分组
+		for (ServiceAndVersion serviceAndVersion : new InstanceServices(StringUtils.isEmpty(application) ? this.instance.group(group) : this.instance.application(group, application))) {
 			List<MethodInvoker> methods4Service = this.methods4service(serviceAndVersion.getService(), serviceAndVersion.getVersionAndCatalog(), period, offset, length);
 			methods4Group.addAll(methods4Service);
 		}
