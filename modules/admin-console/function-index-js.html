@@ -1,7 +1,7 @@
 <script>
 	$("#navigation").html("控制台");
 	
-	var template = "<tr><td>#{group}</td><td>#{service}</td><td id=\"#{group}\"></td></tr>";
+	var template = "<tr><td>#{group}</td><td id=\"#{group}_application\"></td><td>#{service}</td><td id=\"#{group}_instance\"></td></tr>";
 	
 	$("#groups").empty();
 	
@@ -23,7 +23,15 @@
 								url : "/api/finder/instances/service4version?service=" + service.service + "&versionAndCatalog=" + service.versionAndCatalog,
 								// 加载服务对应实例集合
 								success : function callback(instances) {
-									$("#" + group).html(instances.length);
+									$("#" + group + "_instance").html(instances.length);
+								}
+							});
+							jQuery.ajax({
+								type : "GET",
+								url : "/api/finder/applications?group=" + group,
+								// 加载服务对应应用
+								success : function callback(groups) {
+									$("#" + group + "_application").html(groups.length);
 								}
 							});
 						});
