@@ -7,7 +7,7 @@
 	//更新导航
 	$("#navigation").html("客户端统计");
 	
-	var template = "<tr><td>#{date}</td><td>#{group}</td><td>#{application}</td><td>#{method}</td><td>#{cause}</td><td>#{trace}</td><td><button id=\"trace_#{trace}\" data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-history\"></button></td></tr>";
+	var template = "<tr><td>#{date}</td><td>#{group}</td><td>#{application}</td><td>#{cause}</td><td>#{trace}</td><td><button id=\"trace_#{trace}\" data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-history\"></button></td></tr>";
 	
 	function loadClients() {
 		jQuery.ajax({
@@ -29,7 +29,7 @@
 			url : "/api/traces/causes?service=" + param("service") + "&versionAndCatalog=" + param("versionAndCatalog") + "&method=" + param("method") + "&period=" + param("period") + "&offset=" + param("offset") + "&length=" + param("length"),
 			success : function callback(data) {
 				$(data).each(function(index, element){
-					$("#trace-tab_tbody").append(template.replace("#{date}", element.date).replace("#{group}", element.group).replace("#{application}", element.application).replace("#{method}", element.method).replace("#{cause}", element.cause).replaceAll("#{trace}", element.trace));
+					$("#trace-tab_tbody").append(template.replace("#{date}", element.date).replace("#{group}", element.group).replace("#{application}", element.application).replace("#{cause}", element.cause).replaceAll("#{trace}", element.trace));
 					$("#trace_" + element.trace).click(function() {
 						window.open("?function=function-trace&trace=" + element.trace, "_blank");
 					});

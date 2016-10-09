@@ -2,7 +2,7 @@
 <script>
 	$("#navigation").html(param("group"));
 	$("#nav-search").empty();
-	$("#nav-search").append("单位:<select id=\"period\" style=\"width:100px;\"><option value=\"1\">MINUTE</option><option value=\"0\">HOUR</option><option value=\"0\">DAY</option></select> 排序字段:<select id=\"sortBy\" style=\"width:100px;\"><option value=\"TOTAL\">Total</option><option value=\"EXCEPTION\">Error</option><option value=\"TIMEOUT\">Timeout</option><option value=\"RTT\">Elapse</option></select>偏移:<input type=\"number\" class=\"nav-search-input\" id=\"period_offset\" style=\"width:75px;\"/>范围:<input type=\"number\" class=\"nav-search-input\" id=\"period_length\" style=\"width:75px;\"/>");
+	$("#nav-search").append("单位:<select id=\"period\" style=\"width:100px;\"><option value=\"240\">MINUTE</option><option value=\"24\">HOUR</option><option value=\"30\">DAY</option></select> 排序字段:<select id=\"sortBy\" style=\"width:100px;\"><option value=\"TOTAL\">Total</option><option value=\"EXCEPTION\">Error</option><option value=\"TIMEOUT\">Timeout</option><option value=\"RTT\">Elapse</option></select>偏移:<input type=\"number\" class=\"nav-search-input\" id=\"period_offset\" style=\"width:75px;\"/>范围:<input type=\"number\" class=\"nav-search-input\" id=\"period_length\" style=\"width:75px;\"/>");
 	
 	var template = "<tr id=\"#{id}\"><td>#{service}</td><td>#{versionAndCatalog}</td><td>#{method}</td><td>#{total}</td><td>#{error}</td><td>#{timeout}</td><td>#{elapse}</td></tr>";
 	

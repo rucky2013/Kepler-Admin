@@ -58,15 +58,15 @@ public class MethodInvokerServiceImpl extends Statistics implements MethodInvoke
 
 	@Override
 	public List<MethodInvoker> methods4group(String group, String application, Period period, int offset, int length, SortBy sort) {
-		List<MethodInvoker> methods4Group = new ArrayList<>();
+		List<MethodInvoker> methods4group = new ArrayList<>();
 		// 获取分组所有服务, 如果没有传递application则查询整个分组
 		for (ServiceAndVersion serviceAndVersion : new InstanceServices(StringUtils.isEmpty(application) ? this.instance.group(group) : this.instance.application(group, application))) {
 			List<MethodInvoker> methods4Service = this.methods4service(serviceAndVersion.getService(), serviceAndVersion.getVersionAndCatalog(), period, offset, length);
-			methods4Group.addAll(methods4Service);
+			methods4group.addAll(methods4Service);
 		}
 		// 内存排序
-		Collections.sort(methods4Group, sort.comparator());
-		return methods4Group;
+		Collections.sort(methods4group, sort.comparator());
+		return methods4group;
 	}
 
 	private class MongoMethods extends ArrayList<MethodInvoker> {
