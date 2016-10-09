@@ -1,5 +1,6 @@
 package com.kepler.admin.controller;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
@@ -109,6 +110,16 @@ public class AdjustController {
 	@ResponseBody
 	public void tag(String service, String versionAndCatalog, String tag) throws Exception {
 		this.adjust.tag(service, versionAndCatalog, tag);
+	}
+
+	/**
+	 * 获取可以修改Key集合
+	 * 
+	 */
+	@RequestMapping(value = "/keys", method = RequestMethod.GET)
+	@ResponseBody
+	public Collection<String> keys() throws Exception {
+		return this.config.keys();
 	}
 
 	/**

@@ -21,7 +21,7 @@
 	</div>
 </div>
 <div>
-	<button id="modify" class="btn btn-sm btn-info no-radius" type="button">
+	<button id="update" class="btn btn-sm btn-info no-radius" type="button">
 		<i class="ace-icon fa fa-hand-pointer-o"></i> 生效
 	</button>
 	<button id="create" class="btn btn-sm btn-info no-radius" type="button">
@@ -29,7 +29,7 @@
 	</button>
 </div>
 <div id="create_key" style="display:none">
-<form class="form-horizontal" role="form">
+<form class="form-horizontal" role="form" style="width:450px">
 	<div class="form-group">
 		<label class="col-sm-3 control-label no-padding-left" for="key">Profile</label>
 		<div class="col-sm-9">
@@ -41,13 +41,16 @@
 	<div class="form-group">
 		<label class="col-sm-3 control-label no-padding-left" for="key">Key</label>
 		<div class="col-sm-9">
-			<input type="text" id="key" placeholder="key" class="col-xs-120 col-sm-10">
+			<input id="key" type="text" placeholder="key">
+			<select id="keys" style="width:150px">
+				<option value="">N/A</option>
+			</select>
 		</div>
 	</div>
 	<div class="form-group">
 		<label class="col-sm-3 control-label no-padding-left" for="value">Value</label>
 		<div class="col-sm-9">
-			<input type="text" id="value" placeholder="value" class="col-xs-120 col-sm-10">
+			<input type="text" id="value" placeholder="value">
 		</div>
 	</div>
 </form>

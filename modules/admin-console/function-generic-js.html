@@ -67,8 +67,10 @@
 		// 如果(解析后)为JSON Object则格式化
 		if(typeof(json) == 'object') {
 			element.val(JSON.stringify(json, null, 6));
+			return true;
 		}else{
-			alert("请检查JSON");
+			alert("请检查请求的JSON格式");
+			return false;
 		}
 	}
   	
@@ -147,22 +149,32 @@
 		format($("#request").val(), $("#request"));
 	});
 	
+	$("#trace").click(function() {
+		try {
+			var response = JSON.parse($("#response").val());
+			window.open("/?function=function-trace&trace=" + response.trace, "_blank");
+		} catch (err) {
+			alert("请检查响应的JSON格式");
+		}
+	});
+	
 	$("#invoke").click(function() {
 		// 格式化Request
-		format($("#request").val(), $("#request"));
-		$.blockUI({message:'<h4>加载中...</h4>' });
-	 	jQuery.ajax({
-			type : "POST",
-			url : "/api/generic",
-			data : $("#request").val(), 
-			contentType : "application/json;utf-8",
-			success : function(data) {
-				$("#title_response").trigger("click");
-				// 格式化Response
-				format(data, $("#response"));
-				$.unblockUI();
-			}
-		}); 
+		if(format($("#request").val(), $("#request"))){
+			$.blockUI({message:'<h4>加载中...</h4>' });
+		 	jQuery.ajax({
+				type : "POST",
+				url : "/api/generic",
+				data : $("#request").val(), 
+				contentType : "application/json;utf-8",
+				success : function(data) {
+					$("#title_response").trigger("click");
+					// 格式化Response
+					format(data, $("#response"));
+					$.unblockUI();
+				}
+			}); 
+		}
 	});
 	
 	$("#template").click(function() {

@@ -4,6 +4,20 @@
 	$("#host").html(param("host"));
 	//模板
 	var template = "<tr><td class=\"\">#{key}</td><td id=\"td_#{id}\"><span><input id=\"input_#{id}\" name=\"#{key}\" type=\"text\" class=\"form-control\" value=\"#{value}\"></span></td></tr>";
+	
+	//加载Keys
+	function loadingKeys() {
+		jQuery.ajax({
+			type : "GET",
+			url : "/api/adjust/keys",
+			success : function callback(data) {
+				$(data).each(function(index, element){
+					$("#keys").append("<option value='" + element + "'>" + element + "</option>");
+				});
+			}
+		});
+	}
+	
 	//加载动态配置
 	function loadingConfig() {
 		jQuery.ajax({
@@ -28,7 +42,7 @@
 	function loadingServices() {
 		jQuery.ajax({
 			type : "GET",
-			url : "/api/finder/instances/sid?sid=" + param("sid"),
+			url : "/api/dependency/imported?sid=" + param("sid"),
 			success : function callback(data) {
 				$(data).each(function(index, element){
 					$("#services").append("<option value='" + element.service.service + ".'>" + element.service.service + "</option>");
@@ -60,7 +74,10 @@
 	});
 	
 	//绑定修改配置按钮
-	$("#modify").click(function() {
+	$("#update").click(function() {
+		if(!confirm("是否确定变更")){
+			return;
+		}
 		var data = {
 			"sid" : param("sid")
 		};
@@ -83,8 +100,13 @@
 	$("#create").click(function() {
 		$("#create_key").dialog("open");
 	});
+	
+	$("#keys").change(function() {
+		$("#key").val($("#keys").val());
+	});
 
 	function loading(){
+		loadingKeys();
 		loadingConfig();
 		loadingServices();
 	}
