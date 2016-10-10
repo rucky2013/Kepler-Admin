@@ -20,7 +20,7 @@ public interface Dictionary {
 	public static final String FIELD_RTT = "rtt";
 
 	public static final String FIELD_TIMES = "times";
-	
+
 	public static final String FIELD_CAUSE = "cause";
 
 	public static final String FIELD_DATAS = "datas";
@@ -37,11 +37,13 @@ public interface Dictionary {
 
 	public static final String FIELD_FAILED = "failed";
 
+	public static final String FIELD_CURRENT = "current";
+	
+	public static final String FIELD_VERSION = "version";
+
 	public static final String FIELD_SERVICE = "service";
 
 	public static final String FIELD_SERVICES = "services";
-
-	public static final String FIELD_VERSION = "version";
 
 	public static final String FIELD_TIMEOUT = "timeout";
 
@@ -78,7 +80,7 @@ public interface Dictionary {
 	public static final String FIELD_PERIOD_HOUR = "hour";
 
 	public static final String FIELD_PERIOD_MINUTE = "minute";
-	
+
 	public static final String FIELD_PERIOD_SECOND = "second";
 
 	public static final String FIELD_PERIOD_INTERVAL = "period_interval";
