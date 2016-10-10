@@ -2,7 +2,6 @@ package com.kepler.admin.collector;
 
 import java.util.List;
 
-import com.kepler.annotation.Broadcast;
 import com.kepler.annotation.Internal;
 import com.kepler.annotation.Service;
 import com.kepler.host.Host;
@@ -16,6 +15,5 @@ import com.kepler.trace.TraceCause;
 @Internal
 public interface TraceBroadcast {
 
-	@Broadcast
 	public void broadcast(Host host, List<TraceCause> cause);
 }
