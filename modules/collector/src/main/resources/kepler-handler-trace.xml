@@ -5,8 +5,13 @@
     http://www.springframework.org/schema/util
 	http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<bean class="com.kepler.admin.collector.trace.TraceHandler">
+	<bean class="com.kepler.admin.collector.trace.impl.TraceHandler">
 		<constructor-arg ref="kepler.mongo.config.trace" />
+		<constructor-arg ref="kepler.collector.trace.broadcast" />
+	</bean>
+
+	<bean id="kepler.collector.trace.broadcast" class="com.kepler.service.imported.ImportedServiceFactory" parent="kepler.service.imported.abstract">
+		<constructor-arg index="0" value="com.kepler.admin.collector.trace.TraceBroadcast" />
 	</bean>
 
 </beans>
