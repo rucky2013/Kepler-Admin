@@ -1,4 +1,4 @@
-package com.kepler.admin.collector.trace;
+package com.kepler.admin.collector;
 
 import java.util.List;
 

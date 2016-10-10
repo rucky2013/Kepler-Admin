@@ -1,11 +1,11 @@
-package com.kepler.admin.collector.trace.impl;
+package com.kepler.admin.collector.trace;
 
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.kepler.admin.collector.trace.TraceBroadcast;
+import com.kepler.admin.collector.TraceBroadcast;
 import com.kepler.admin.domain.Period;
 import com.kepler.admin.mongo.Dictionary;
 import com.kepler.admin.mongo.MongoConfig;
