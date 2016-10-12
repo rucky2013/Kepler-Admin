@@ -12,6 +12,7 @@ import com.kepler.ack.impl.AckTimeOutImpl;
 import com.kepler.admin.resource.config.Config;
 import com.kepler.admin.resource.config.ConfigContext;
 import com.kepler.admin.resource.config.ConfigFinder;
+import com.kepler.admin.trace.impl.TraceTask;
 import com.kepler.connection.reject.AddressReject;
 import com.kepler.connection.reject.DefaultRejectContext;
 import com.kepler.connection.reject.ServiceReject;
@@ -67,6 +68,7 @@ public class ConfigContextImpl implements ConfigFinder, ConfigContext {
 		this.keys.add(ServiceReject.REJECT_KEY);
 		this.keys.add(DemoteInvoker.DEMOTE_KEY);
 		this.keys.add(AckFuture.TIMEOUT_KEY);
+		this.keys.add(TraceTask.ENABLED_KEY);
 		this.keys.add(SerialID.SERIAL_KEY);
 		this.keys.add(Trace.ENABLED_KEY);
 		this.keys.add(Host.TAG_KEY);
