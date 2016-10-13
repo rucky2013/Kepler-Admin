@@ -7,11 +7,13 @@
 
 	<bean class="com.kepler.admin.collector.trace.TraceHandler">
 		<constructor-arg ref="kepler.mongo.config.trace" />
-		<constructor-arg ref="kepler.collector.broadcast" />
+		<constructor-arg ref="kepler.warning" />
 	</bean>
 
-	<bean id="kepler.collector.broadcast" class="com.kepler.service.imported.ImportedServiceFactory" parent="kepler.service.imported.abstract">
-		<constructor-arg index="0" value="com.kepler.admin.collector.TraceBroadcast" />
+	<bean id="kepler.warning" class="com.kepler.service.imported.ImportedServiceFactory" parent="kepler.service.imported.abstract">
+		<constructor-arg index="0" value="com.kepler.admin.trace.Feeder" />
+		<constructor-arg index="1" value="" />
+		<constructor-arg index="2" value="warning" />
 	</bean>
 
 </beans>

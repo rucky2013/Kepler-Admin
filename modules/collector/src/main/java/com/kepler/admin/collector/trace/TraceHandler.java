@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.kepler.admin.collector.TraceBroadcast;
 import com.kepler.admin.domain.Period;
 import com.kepler.admin.mongo.Dictionary;
 import com.kepler.admin.mongo.MongoConfig;
@@ -27,17 +26,17 @@ public class TraceHandler implements Feeder {
 	/**
 	 * 是否开启广播
 	 */
-	public static final String BROADCAST = TraceHandler.class.getName().toLowerCase() + ".broadcast";
+	public static final String WARNING = TraceHandler.class.getName().toLowerCase() + ".warning";
 
 	private static final Log LOGGER = LogFactory.getLog(TraceHandler.class);
 
-	private final TraceBroadcast broadcast;
-
 	private final MongoConfig trace;
 
-	public TraceHandler(MongoConfig trace, TraceBroadcast broadcast) {
+	private final Feeder warning;
+
+	public TraceHandler(MongoConfig trace, Feeder warning) {
 		super();
-		this.broadcast = broadcast;
+		this.warning = warning;
 		this.trace = trace;
 	}
 
@@ -46,20 +45,19 @@ public class TraceHandler implements Feeder {
 		// 持久化
 		this.persistent(host, cause);
 		// 广播
-		this.broadcast(host, cause);
+		this.warning(host, cause);
 	}
 
 	/**
-	 * 广播变化
+	 * 转发
 	 * 
 	 * @param host
 	 * @param cause
 	 */
-	private void broadcast(Host host, List<TraceCause> cause) {
-		if (PropertiesUtils.get(TraceHandler.BROADCAST, false)) {
+	private void warning(Host host, List<TraceCause> cause) {
+		if (PropertiesUtils.get(TraceHandler.WARNING, false)) {
 			try {
-				// 广播
-				this.broadcast.broadcast(host, cause);
+				this.warning.feed(host, cause);
 			} catch (Throwable e) {
 				TraceHandler.LOGGER.error(e.getMessage(), e);
 			}
