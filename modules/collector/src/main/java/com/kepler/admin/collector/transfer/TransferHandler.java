@@ -87,19 +87,16 @@ public class TransferHandler implements Feeder {
 	}
 
 	@Override
-	public void feed(long timestamp, Collection<Transfers> transfers) {
-		// 检查集合
-		if (!transfers.isEmpty()) {
-			// 开启Batch
-			BulkWriteOperation batch4minute = this.transfers4minute.collection().bulkWrite();
-			BulkWriteOperation batch4hour = this.transfers4hour.collection().bulkWrite();
-			BulkWriteOperation batch4day = this.transfers4day.collection().bulkWrite();
-			// 提交并产生任务后执行批量
-			if (this.submit(timestamp, transfers, batch4minute, batch4hour, batch4day)) {
-				batch4minute.execute();
-				batch4hour.execute();
-				batch4day.execute();
-			}
+	public void feed(Collection<Transfers> transfers) {
+		// 开启Batch
+		BulkWriteOperation batch4minute = this.transfers4minute.collection().bulkWrite();
+		BulkWriteOperation batch4hour = this.transfers4hour.collection().bulkWrite();
+		BulkWriteOperation batch4day = this.transfers4day.collection().bulkWrite();
+		// 提交并产生任务后执行批量
+		if (this.submit(transfers, batch4minute, batch4hour, batch4day)) {
+			batch4minute.execute();
+			batch4hour.execute();
+			batch4day.execute();
 		}
 	}
 
@@ -113,11 +110,7 @@ public class TransferHandler implements Feeder {
 	 * @param batch4day
 	 * @return
 	 */
-	private boolean submit(long timestamp, Collection<Transfers> transfers, BulkWriteOperation batch4minute, BulkWriteOperation batch4hour, BulkWriteOperation batch4day) {
-		// 周期快照
-		long minute = Period.MINUTE.period(timestamp);
-		long hour = Period.HOUR.period(timestamp);
-		long day = Period.DAY.period(timestamp);
+	private boolean submit(Collection<Transfers> transfers, BulkWriteOperation batch4minute, BulkWriteOperation batch4hour, BulkWriteOperation batch4day) {
 		// 是否产生任务(默认False)
 		boolean submited = false;
 		for (Transfers each : transfers) {
@@ -128,11 +121,11 @@ public class TransferHandler implements Feeder {
 				query.put(Dictionary.FIELD_HOST_LOCAL_SID, transfer.local().sid());
 				DBObject update = this.update(transfer);
 				// 更新周期为分钟
-				this.update4period(minute, query, update, batch4minute);
+				this.update4period(Period.MINUTE.period(transfer.timestamp()), query, update, batch4minute);
 				// 更新周期为小时
-				this.update4period(hour, query, update, batch4hour);
+				this.update4period(Period.HOUR.period(transfer.timestamp()), query, update, batch4hour);
 				// 更新周期为每天
-				this.update4period(day, query, update, batch4day);
+				this.update4period(Period.DAY.period(transfer.timestamp()), query, update, batch4day);
 				submited = true;
 			}
 		}

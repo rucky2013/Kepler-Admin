@@ -37,11 +37,6 @@ public class StatusHandler implements Feeder {
 	}
 
 	@Override
-	@Deprecated
-	public void feed(Host local, Map<String, Object> status) {
-	}
-
-	@Override
 	public void feed(long timestamp, Host local, Map<String, Point> status) {
 		// Period(秒) - SID(对应索引)
 		BasicDBObjectBuilder insert = BasicDBObjectBuilder.start().add(Dictionary.FIELD_PERIOD, Period.SECOND.period(timestamp)).add(Dictionary.FIELD_HOST_LOCAL_SID, local.sid());
