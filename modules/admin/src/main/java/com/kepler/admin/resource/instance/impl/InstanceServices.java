@@ -33,7 +33,7 @@ public class InstanceServices extends TreeSet<ServiceAndVersion> {
 
 		@Override
 		public int compare(ServiceAndVersion o1, ServiceAndVersion o2) {
-			return String.CASE_INSENSITIVE_ORDER.compare(o1.getService(), o2.getService());
+			return String.CASE_INSENSITIVE_ORDER.compare(o1.getService() + o1.getVersionAndCatalog(), o2.getService() + o2.getVersionAndCatalog());
 		}
 	}
 }
