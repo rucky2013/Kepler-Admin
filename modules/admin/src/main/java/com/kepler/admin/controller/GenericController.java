@@ -44,7 +44,7 @@ public class GenericController {
 	public DefaultResponse generic(@RequestBody DefaultRequest request) {
 		// 指定Tag
 		this.headers.get().put(Host.TAG_KEY, request.getTag());
-		DefaultResponse response = new DefaultResponse(TraceContext.get());
+		DefaultResponse response = new DefaultResponse(TraceContext.get4create());
 		try {
 			// 发送请求
 			response.response(this.generic.invoke(request.metadata(), request.getMethod(), request.getClasses(), request.getDatas()));

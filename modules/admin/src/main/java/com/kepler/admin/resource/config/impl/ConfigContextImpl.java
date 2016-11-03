@@ -25,7 +25,6 @@ import com.kepler.invoker.impl.CompeteInvoker;
 import com.kepler.invoker.impl.DemoteInvoker;
 import com.kepler.invoker.impl.MainInvoker;
 import com.kepler.mock.impl.DefaultMockerContext;
-import com.kepler.promotion.impl.DefaultPromotion;
 import com.kepler.serial.SerialID;
 import com.kepler.token.impl.AccessTokenContext;
 import com.kepler.trace.Trace;
@@ -59,8 +58,6 @@ public class ConfigContextImpl implements ConfigFinder, ConfigContext {
 		this.keys.add(DefaultMockerContext.MOCK_KEY);
 		this.keys.add(AckTimeOutImpl.DEMOTION_KEY);
 		this.keys.add(BroadcastInvoker.CANCEL_KEY);
-		this.keys.add(DefaultPromotion.ELAPSE_KEY);
-		this.keys.add(DefaultPromotion.TIMES_KEY);
 		this.keys.add(MainInvoker.THRESHOLD_KEY);
 		this.keys.add(AddressReject.ADDRESS_KEY);
 		this.keys.add(CompeteInvoker.CANCEL_KEY);

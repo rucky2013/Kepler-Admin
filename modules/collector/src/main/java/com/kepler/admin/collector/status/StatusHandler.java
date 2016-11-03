@@ -17,7 +17,7 @@ import com.mongodb.DBObject;
  * 
  * @author kim 2015年7月22日
  */
-@Autowired
+@Autowired(version = { "0.0.1", "0.0.7", "0.0.8" })
 public class StatusHandler implements Feeder {
 
 	/**

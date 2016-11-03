@@ -19,6 +19,8 @@ public interface Dictionary {
 
 	public static final String FIELD_RTT = "rtt";
 
+	public static final String FIELD_MAX = "max";
+
 	public static final String FIELD_TIMES = "times";
 
 	public static final String FIELD_CAUSE = "cause";
@@ -38,7 +40,7 @@ public interface Dictionary {
 	public static final String FIELD_FAILED = "failed";
 
 	public static final String FIELD_CURRENT = "current";
-	
+
 	public static final String FIELD_VERSION = "version";
 
 	public static final String FIELD_SERVICE = "service";

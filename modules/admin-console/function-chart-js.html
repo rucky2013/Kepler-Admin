@@ -17,8 +17,8 @@
 	var instance_template = $("#chart_instances").html();
 	$("#chart_instances").empty();
 	//METHOD统计模板	
-	var methods_template_service = "<tr><td>${name}</td><td>${total}</td><td>${timeout}</td><td>${exception}</td><td>${rtt}(ms)</td><td><button id=\"statics4clients_${id}\" data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-bar-chart\"></button></td></tr>";
-	var methods_template_instance = "<tr><td>${name}</td><td>${total}</td><td>${timeout}</td><td>${exception}</td><td>${rtt}(ms)</td></tr>";
+	var methods_template_service = "<tr><td>${name}</td><td>${total}</td><td>${timeout}</td><td>${exception}</td><td>${rtt}(ms)</td><td>${max}(ms)</td><td><button id=\"statics4clients_${id}\" data-toggle=\"dropdown\" class=\"btn btn-primary btn-xs fa fa-bar-chart\"></button></td></tr>";
+	var methods_template_instance = "<tr><td>${name}</td><td>${total}</td><td>${timeout}</td><td>${exception}</td><td>${rtt}(ms)</td><td>${max}(ms)</td></tr>";
 	//加载所有服务聚合统计	
 	function loadService() {
 		jQuery.ajax({
@@ -97,7 +97,7 @@
 			success : function callback(data) {
 				$("#method-tab_tbody_"+sid).empty();
 				$(data).each(function(index, element){
-					$("#method-tab_tbody_"+sid).append(methods_template_instance.replace("${name}", element.name).replace("${total}", element.total).replace("${timeout}", element.timeout).replace("${exception}", element.exception).replace("${rtt}", element.rtt));
+					$("#method-tab_tbody_"+sid).append(methods_template_instance.replace("${name}", element.name).replace("${total}", element.total).replace("${timeout}", element.timeout).replace("${exception}", element.exception).replace("${rtt}", element.rtt).replace("${max}", element.max));
 				});
 			}
 		});
@@ -110,7 +110,7 @@
 			success : function callback(data) {
 				$("#method-tab_tbody_service").empty();
 				$(data).each(function(index, element){
-					$("#method-tab_tbody_service").append(methods_template_service.replace("${name}", element.name).replace("${total}", element.total).replace("${timeout}", element.timeout).replace("${exception}", element.exception).replace("${rtt}", element.rtt).replace("${id}", element.name));
+					$("#method-tab_tbody_service").append(methods_template_service.replace("${name}", element.name).replace("${total}", element.total).replace("${timeout}", element.timeout).replace("${exception}", element.exception).replace("${rtt}", element.rtt).replace("${max}", element.max).replace("${id}", element.name));
 					$("#statics4clients_" + element.name).click(function() {
 						window.open("/?function=function-barchart-statistics4clients&service=" + param("service") + "&versionAndCatalog=" + param("versionAndCatalog") + "&method=" + element.name + "&period=" + $("#period").find('option:selected').text() + "&offset=" + period_offset() + "&length=" + period_length(), "_blank");
 					});

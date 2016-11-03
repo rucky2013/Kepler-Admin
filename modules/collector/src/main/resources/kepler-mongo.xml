@@ -11,7 +11,7 @@
 		<constructor-arg index="2" value="#{T(com.kepler.config.PropertiesUtils).get('com.mongodb.mongoclient.username')}" />
 		<constructor-arg index="3" value="#{T(com.kepler.config.PropertiesUtils).get('com.mongodb.mongoclient.password')}" />
 	</bean>
-	
+
 	<bean id="kepler.mongo.config.trace" class="com.kepler.admin.mongo.impl.MongoProxyConfig">
 		<constructor-arg value="trace" />
 		<constructor-arg ref="kepler.mongo" />
@@ -36,10 +36,4 @@
 		<constructor-arg value="transfer.minute" />
 		<constructor-arg ref="kepler.mongo" />
 	</bean>
-
-	<bean id="kepler.mongo.config.transfer.dashboard" class="com.kepler.admin.mongo.impl.MongoProxyConfig">
-		<constructor-arg value="transfer.dashboard" />
-		<constructor-arg ref="kepler.mongo" />
-	</bean>
-
 </beans>

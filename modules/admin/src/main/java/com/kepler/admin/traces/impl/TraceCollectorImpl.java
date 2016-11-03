@@ -28,14 +28,14 @@ public class TraceCollectorImpl implements TraceCollector {
 	private static final int MAX = PropertiesUtils.get(TraceCollectorImpl.class.getName().toLowerCase() + ".max", 60 * 24 * 15);
 
 	/**
-	 * 单词查询范围补充
+	 * 单次查询范围补充
 	 */
 	private static final int PADDING = PropertiesUtils.get(TraceCollectorImpl.class.getName().toLowerCase() + ".padding", 10);
 
 	/**
-	 * 单词查询最大数据量
+	 * 单次查询最大数据量
 	 */
-	private static final int LIMIT = PropertiesUtils.get(TraceCollectorImpl.class.getName().toLowerCase() + ".limit", 50);
+	private static final int LIMIT = PropertiesUtils.get(TraceCollectorImpl.class.getName().toLowerCase() + ".limit", 200);
 
 	/**
 	 * 排序

@@ -20,7 +20,7 @@ import com.mongodb.BulkWriteOperation;
  * @author KimShen
  *
  */
-@Autowired
+@Autowired(version = { "0.0.1", "0.0.7", "0.0.8" })
 public class TraceHandler implements Feeder {
 
 	/**

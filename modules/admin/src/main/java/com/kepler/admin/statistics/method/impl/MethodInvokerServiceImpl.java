@@ -82,11 +82,12 @@ public class MethodInvokerServiceImpl extends Statistics implements MethodInvoke
 					String service = MongoUtils.asString(object, Dictionary.FIELD_SERVICE);
 					String version = MongoUtils.asString(object, Dictionary.FIELD_VERSION);
 					String name = MongoUtils.asString(object, Dictionary.FIELD_METHOD);
-					long total = MongoUtils.asLong(object, Dictionary.FIELD_TOTAL);
-					long timeout = MongoUtils.asLong(object, Dictionary.FIELD_TIMEOUT);
 					long exception = MongoUtils.asLong(object, Dictionary.FIELD_EXCEPTION);
+					long timeout = MongoUtils.asLong(object, Dictionary.FIELD_TIMEOUT);
+					long total = MongoUtils.asLong(object, Dictionary.FIELD_TOTAL, 0);
+					long max = MongoUtils.asLong(object, Dictionary.FIELD_MAX, 0);
 					double rtt = total == 0 ? 0 : Double.valueOf(new DecimalFormat("#.00").format(MongoUtils.asDouble(object, Dictionary.FIELD_RTT, 0) / total));
-					super.add(new MethodInvoker(service, version, name, total, timeout, exception, rtt));
+					super.add(new MethodInvoker(service, version, name, total, timeout, exception, max, rtt));
 				}
 			}
 		}

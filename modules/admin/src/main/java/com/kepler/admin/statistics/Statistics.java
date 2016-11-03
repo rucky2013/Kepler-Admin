@@ -101,6 +101,7 @@ abstract public class Statistics {
 	protected static DBObject group(DBObject condition) {
 		BasicDBObjectBuilder query = BasicDBObjectBuilder.start("_id", condition);
 		// 统计(Sum)
+		query.add(Dictionary.FIELD_MAX, BasicDBObjectBuilder.start("$max", "$" + Dictionary.FIELD_MAX).get());
 		query.add(Dictionary.FIELD_RTT, BasicDBObjectBuilder.start("$sum", "$" + Dictionary.FIELD_RTT).get());
 		query.add(Dictionary.FIELD_TOTAL, BasicDBObjectBuilder.start("$sum", "$" + Dictionary.FIELD_TOTAL).get());
 		query.add(Dictionary.FIELD_TIMEOUT, BasicDBObjectBuilder.start("$sum", "$" + Dictionary.FIELD_TIMEOUT).get());
@@ -115,6 +116,7 @@ abstract public class Statistics {
 	 */
 	protected static DBObject project(DBObject query) {
 		// 统计值
+		query.put(Dictionary.FIELD_MAX, "$" + Dictionary.FIELD_MAX);
 		query.put(Dictionary.FIELD_RTT, "$" + Dictionary.FIELD_RTT);
 		query.put(Dictionary.FIELD_TOTAL, "$" + Dictionary.FIELD_TOTAL);
 		query.put(Dictionary.FIELD_TIMEOUT, "$" + Dictionary.FIELD_TIMEOUT);

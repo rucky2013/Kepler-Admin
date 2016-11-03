@@ -2,12 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.kepler</groupId>
 	<artifactId>kepler-collector-parent</artifactId>
-	<version>0.0.7-SNAPSHOT</version>
+	<version>0.0.8-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
 		<!-- Kepler Admin/Collect版本 -->
-		<maven.kepler.version>0.0.7-SNAPSHOT</maven.kepler.version>
+		<maven.kepler.version>0.0.8-SNAPSHOT</maven.kepler.version>
 		<maven.project.compile.version>1.7</maven.project.compile.version>
 		<maven.project.spring.version>3.2.4.RELEASE</maven.project.spring.version>
 		<maven.project.build.sourceEncoding>UTF-8</maven.project.build.sourceEncoding>
