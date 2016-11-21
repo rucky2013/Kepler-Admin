@@ -8,7 +8,7 @@ import java.util.Map;
  * @author kim 2015年12月26日
  */
 public interface Config {
-
+	
 	public String getSid();
 
 	/**

@@ -7,9 +7,9 @@ package com.kepler.admin.resource.config;
  */
 public interface ConfigContext {
 
-	public ConfigContext update(Config config);
+	public ConfigContext update(String config);
 
-	public ConfigContext insert(Config config);
+	public ConfigContext insert(String config);
 
 	public ConfigContext remove(String path);
 }

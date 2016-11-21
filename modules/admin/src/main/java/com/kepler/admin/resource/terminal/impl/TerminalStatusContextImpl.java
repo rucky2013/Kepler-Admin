@@ -8,28 +8,58 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.curator.framework.CuratorFramework;
+
 import com.kepler.admin.resource.terminal.TerminalStatus;
 import com.kepler.admin.resource.terminal.TerminalStatusContext;
 import com.kepler.admin.resource.terminal.TerminalStatusFinder;
+import com.kepler.host.HostStatus;
+import com.kepler.serial.Serials;
+import com.kepler.zookeeper.ZkContext;
 
 /**
  * @author kim 2015年12月26日
  */
 public class TerminalStatusContextImpl implements TerminalStatusFinder, TerminalStatusContext {
 
+	private static final Log LOGGER = LogFactory.getLog(TerminalStatusContextImpl.class);
+
 	// 业务分组对应的终端状态集合
-	private final Map<String, List<TerminalStatus>> group = new HashMap<String, List<TerminalStatus>>();
+	private final Map<String, List<String>> group = new HashMap<String, List<String>>();
 
 	// ZK路径对应的终端状态
-	private final Map<String, TerminalStatus> path = new HashMap<String, TerminalStatus>();
+	private final Map<String, String> path = new HashMap<String, String>();
 
 	// SID对应的终端状态
-	private final Map<String, TerminalStatus> sid = new HashMap<String, TerminalStatus>();
-
-	// 无效的终端
-	private final UnvalidTerminalStatus unvalid = new UnvalidTerminalStatus();
+	private final Map<String, String> sid = new HashMap<String, String>();
 
 	private final Object lock = new Object();
+
+	private final CuratorFramework client;
+
+	private final Serials serials;
+
+	public TerminalStatusContextImpl(CuratorFramework client, Serials serials) {
+		this.serials = serials;
+		this.client = client;
+	}
+
+	/**
+	 * 获取指定Path的TerminalStatus
+	 * 
+	 * @param path
+	 * @return
+	 */
+	private TerminalStatus get(String path) {
+		try {
+			return new TerminalStatusImpl(path, this.serials.def4input().input(this.client.getData().forPath(path), HostStatus.class));
+		} catch (Exception e) {
+			TerminalStatusContextImpl.LOGGER.error(e.getMessage(), e);
+			return new UnvalidTerminalStatus(path);
+		}
+	}
 
 	/**
 	 * 工具方法
@@ -38,10 +68,10 @@ public class TerminalStatusContextImpl implements TerminalStatusFinder, Terminal
 	 * @param key
 	 * @param status
 	 */
-	private void upsert(Map<String, List<TerminalStatus>> condition, String key, TerminalStatus status) {
-		List<TerminalStatus> statuses = condition.get(key);
-		condition.put(key, (statuses = statuses != null ? statuses : new ArrayList<TerminalStatus>()));
-		statuses.add(status);
+	private void upsert(Map<String, List<String>> condition, String key, String path) {
+		List<String> statuses = condition.get(key);
+		condition.put(key, (statuses = statuses != null ? statuses : new ArrayList<String>()));
+		statuses.add(path);
 	}
 
 	/**
@@ -51,9 +81,9 @@ public class TerminalStatusContextImpl implements TerminalStatusFinder, Terminal
 	 * @param key
 	 * @param status
 	 */
-	private void remove(Map<String, List<TerminalStatus>> condition, String key, TerminalStatus status) {
-		List<TerminalStatus> statuses = condition.get(key);
-		statuses.remove(status);
+	private void remove(Map<String, List<String>> condition, String key, String path) {
+		List<String> statuses = condition.get(key);
+		statuses.remove(path);
 		// 级联删除, 如果集合为空则删除对应集合
 		if (statuses.isEmpty()) {
 			condition.remove(key);
@@ -61,7 +91,11 @@ public class TerminalStatusContextImpl implements TerminalStatusFinder, Terminal
 	}
 
 	public Collection<TerminalStatus> group(String group) {
-		return this.group.get(group);
+		List<TerminalStatus> groups = new ArrayList<TerminalStatus>();
+		for (String path : this.group.get(group)) {
+			groups.add(this.get(path));
+		}
+		return groups;
 	}
 
 	public Collection<TerminalStatus> application(String group, String application) {
@@ -91,17 +125,16 @@ public class TerminalStatusContextImpl implements TerminalStatusFinder, Terminal
 
 	@Override
 	public TerminalStatus sid(String sid) {
-		TerminalStatus terminal = this.sid.get(sid);
-		return terminal != null ? terminal : this.unvalid;
+		return this.get(ZkContext.ROOT + ZkContext.STATUS + "/" + sid);
 	}
 
 	@Override
 	// 强一致
 	public TerminalStatusContextImpl insert(TerminalStatus status) {
 		synchronized (this.lock) {
-			this.upsert(this.group, status.getGroup(), status);
-			this.path.put(status.getPath(), status);
-			this.sid.put(status.getSid(), status);
+			this.upsert(this.group, status.getGroup(), status.getPath());
+			this.path.put(status.getPath(), status.getSid());
+			this.sid.put(status.getSid(), status.getGroup());
 			return this;
 		}
 	}
@@ -116,9 +149,9 @@ public class TerminalStatusContextImpl implements TerminalStatusFinder, Terminal
 	@Override
 	public TerminalStatusContextImpl remove(String path) {
 		synchronized (this.lock) {
-			// 获取Path对应Status并从SID集合删除
-			TerminalStatus status = this.sid.remove(this.path.remove(path).getSid());
-			this.remove(this.group, status.getGroup(), status);
+			// 删除Path获取Sid, 删除Sid获取Group, 完全删除
+			String group = this.sid.remove(this.path.remove(path));
+			this.remove(this.group, group, path);
 			return this;
 		}
 	}
@@ -132,6 +165,13 @@ public class TerminalStatusContextImpl implements TerminalStatusFinder, Terminal
 	private class UnvalidTerminalStatus implements TerminalStatus {
 
 		private static final long serialVersionUID = 1L;
+
+		private final String path;
+
+		private UnvalidTerminalStatus(String path) {
+			super();
+			this.path = path;
+		}
 
 		@Override
 		public String getSid() {
@@ -165,7 +205,7 @@ public class TerminalStatusContextImpl implements TerminalStatusFinder, Terminal
 
 		@Override
 		public String getPath() {
-			return "";
+			return this.path;
 		}
 	}
 }

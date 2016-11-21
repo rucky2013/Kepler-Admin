@@ -20,7 +20,7 @@ public class TerminalStatusImpl implements TerminalStatus {
 	private final HostStatus status;
 
 	private final String path;
-
+	
 	public TerminalStatusImpl(String path, HostStatus status) {
 		this.path = path;
 		this.status = status;

@@ -7,10 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.curator.framework.CuratorFramework;
+
 import com.kepler.ack.impl.AckFuture;
 import com.kepler.ack.impl.AckTimeOutImpl;
 import com.kepler.admin.resource.config.Config;
-import com.kepler.admin.resource.config.ConfigContext;
 import com.kepler.admin.resource.config.ConfigFinder;
 import com.kepler.admin.trace.impl.TraceTask;
 import com.kepler.connection.reject.AddressReject;
@@ -26,30 +29,36 @@ import com.kepler.invoker.impl.DemoteInvoker;
 import com.kepler.invoker.impl.MainInvoker;
 import com.kepler.mock.impl.DefaultMockerContext;
 import com.kepler.serial.SerialID;
+import com.kepler.serial.Serials;
 import com.kepler.token.impl.AccessTokenContext;
 import com.kepler.trace.Trace;
+import com.kepler.zookeeper.ZkContext;
 
 /**
  * @author kim 2015年12月26日
  */
-public class ConfigContextImpl implements ConfigFinder, ConfigContext {
+public class ConfigFinderImpl implements ConfigFinder {
 
-	/**
-	 * Path维度
-	 */
-	private final Map<String, Config> path = new HashMap<String, Config>();
+	private static final Map<String, Object> DATA = new HashMap<String, Object>();
 
-	/**
-	 * SID维度
-	 */
-	private final Map<String, Config> sid = new HashMap<String, Config>();
+	private static final Log LOGGER = LogFactory.getLog(ConfigFinderImpl.class);
 
 	/**
 	 * Key集合
 	 */
 	private final List<String> keys = new ArrayList<String>();
 
-	public ConfigContextImpl() {
+	private final CuratorFramework client;
+
+	private final Serials serials;
+
+	public ConfigFinderImpl(CuratorFramework client, Serials serials) {
+		this.serials = serials;
+		this.client = client;
+		this.init();
+	}
+
+	private void init() {
 		this.keys.add(AccessTokenContext.TOKEN_PROFILE_KEY);
 		this.keys.add(DefaultIDGenerators.GENERATOR_KEY);
 		this.keys.add(MainInvoker.THRESHOLD_ENABLED_KEY);
@@ -72,38 +81,16 @@ public class ConfigContextImpl implements ConfigFinder, ConfigContext {
 		Collections.sort(keys, String.CASE_INSENSITIVE_ORDER);
 	}
 
-	private ConfigContextImpl remove(Config config) {
-		this.path.remove(config.getPath());
-		this.sid.remove(config.getSid());
-		return this;
-	}
-
 	@Override
+	@SuppressWarnings("unchecked")
 	public Config sid(String sid) {
-		return this.sid.get(sid);
-	}
-
-	@Override
-	public ConfigContextImpl remove(String path) {
-		synchronized (path.intern()) {
-			return this.remove(this.path.get(path));
-		}
-	}
-
-	@Override
-	public ConfigContextImpl insert(Config config) {
-		synchronized (config.getPath().intern()) {
-			this.path.put(config.getPath(), config);
-			this.sid.put(config.getSid(), config);
-		}
-		return this;
-	}
-
-	@Override
-	public ConfigContextImpl update(Config config) {
-		synchronized (config.getPath().intern()) {
-			// Insert after Delete
-			return this.remove(this.path.get(config.getPath())).insert(config);
+		// 组合路径
+		String path = ZkContext.ROOT + ZkContext.CONFIG + "/" + sid;
+		try {
+			return new ConfigImpl(path, this.serials.def4input().input(this.client.getData().forPath(path), Map.class));
+		} catch (Exception e) {
+			ConfigFinderImpl.LOGGER.error(e.getMessage(), e);
+			return new ConfigImpl(path, ConfigFinderImpl.DATA);
 		}
 	}
 
